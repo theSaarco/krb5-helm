@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: {{ template "kerberos.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "kerberos.fullname" . }}-client
+spec:
+  containers:
+  - image: {{ .Values.containers.image }}:{{ .Values.containers.tag }}
+    name: krbclient
+    imagePullPolicy: {{ .Values.containers.pullPolicy }}
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "while true; do sleep 300; done;" ]
+    volumeMounts:
+    - name: krb5-conf
+      mountPath: /etc/krb5.conf
+      subPath: krb5.conf
+    - name: ccache
+      mountPath: {{ .Values.krb5.default_ccache_path }}
+    - name: krb5-keytab
+      mountPath: /etc/krb5.keytab
+      subPath: krb5.keytab
+  - image: {{ .Values.sidecar.image }}:{{ .Values.sidecar.tag }}
+    name: sidecar
+    imagePullPolicy: {{ .Values.sidecar.pullPolicy }}
+    # command: [ "/bin/bash", "-c", "--" ]
+    # args: [ "while true; do sleep 300; done;" ]
+    command: ["/rekinit.sh"]
+    env:
+    - name: PERIOD_SECONDS
+      value: "3600"
+    - name: OPTIONS
+      value: "-k"
+    - name: APPEND_OPTIONS
+      value: "iguazio"
+    volumeMounts:
+    - name: krb5-conf
+      mountPath: /etc/krb5.conf
+      subPath: krb5.conf
+    - name: sidecar-conf
+      mountPath: /rekinit.sh
+      subPath: rekinit.sh
+    - name: ccache
+      mountPath: {{ .Values.krb5.default_ccache_path }}
+    - name: krb5-keytab
+      mountPath: /etc/krb5.keytab
+      subPath: krb5.keytab
+  volumes:
+  - name: krb5-conf
+    configMap:
+      name: kuberos-kuberos-krb5-config
+  - name: krb5-keytab
+    secret:
+      secretName: {{ .Values.client.secret_name }}
+  - name: sidecar-conf
+    configMap:
+      name: {{ template "kerberos.fullname" . }}-sidecar-config
+      defaultMode: 0755
+  - name: ccache
+    emptyDir:
+      medium: Memory
+  restartPolicy: Always
+  schedulerName: default-scheduler

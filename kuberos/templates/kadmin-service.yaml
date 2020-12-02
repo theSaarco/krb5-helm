@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "kerberos.fullname" . }}-kadmin
+  labels:
+    app: {{ template "kerberos.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  type: {{ .Values.kadmin.service }}
+  ports:
+    - port: {{ .Values.kadmin.udp.port }}
+      targetPort: {{ .Values.kadmin.udp.name }}
+      protocol: UDP
+      name: {{ .Values.kadmin.udp.name }}
+{{- if .Values.kadmin.tcp }}
+    - port: {{ .Values.kadmin.tcp.port }}
+      targetPort: {{ .Values.kadmin.tcp.name }}
+      protocol: TCP
+      name: {{ .Values.kadmin.tcp.name }}
+{{- end }}
+  selector:
+    app: {{ template "kerberos.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}

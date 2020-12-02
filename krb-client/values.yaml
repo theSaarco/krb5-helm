@@ -1,0 +1,19 @@
+serviceAccount:
+  create: true
+
+containers:
+  image: kuberos
+  tag: latest
+  pullPolicy: IfNotPresent
+
+sidecar:
+  image: krb_sidecar
+  tag: latest
+  pullPolicy: IfNotPresent
+
+krb5:
+  default_ccache_path: /tmp/ccache
+  default_ccache_file: krb5kdc_ccache
+
+client:
+  secret_name: "krb5-keytab"

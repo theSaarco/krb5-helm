@@ -1,0 +1,8 @@
+apiVersion: v2
+name: krb-client
+description: Install Kerberos client pod
+
+type: application
+version: 0.1.0
+
+appVersion: 1.16.0

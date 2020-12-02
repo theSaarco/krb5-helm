@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: admin-principal
+  annotations:
+    "helm.sh/hook": "post-install"
+    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
+spec:
+  backoffLimit: 10
+  activeDeadlineSeconds: 300
+  template:
+    spec:
+      containers:
+      - name: create-admin-principal
+        image: {{ .Values.containers.image }}:{{ .Values.containers.tag }}
+        imagePullPolicy: {{ .Values.containers.pullPolicy }}
+        command:
+        - /bin/bash
+        - -c
+        args:
+        # kadmind not quite ready by the time this triggers
+        - "sleep 10 \ 
+          && \
+          /usr/sbin/kadmin.local \
+          -r \"$(REALM)\" \
+          addprinc \
+          -pw \"$(PRINC_PASSWORD)\" \
+          \"$(PRINCIPAL)/admin\""
+        env:
+        - name: REALM
+          value: {{ .Values.krb5.default_realm | upper }}
+        - name: PRINC_PASSWORD
+          value: {{ .Values.admin_princ.password }}
+        - name: PRINCIPAL
+          value: {{ .Values.admin_princ.name }}
+        volumeMounts:
+        - name: {{ .Values.kdc.persistence.name }}
+          mountPath: /var/kerberos/krb5kdc
+        - name: krb5-conf
+          mountPath: /etc/krb5.conf
+          subPath: krb5.conf
+      volumes:
+      - name: {{ .Values.kdc.persistence.name }}
+{{- if .Values.kdc.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.kdc.persistence.name }}
+{{- else if not .Values.kdc.persistence.enabled }}
+        emptyDir: {}
+{{- end }} 
+      - name: krb5-conf
+        configMap:
+          name: {{ template "kerberos.fullname" . }}-krb5-config           
+      restartPolicy: OnFailure
