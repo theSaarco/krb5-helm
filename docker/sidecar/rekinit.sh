@@ -9,10 +9,6 @@ if [[ "$OPTIONS" == "" ]]; then
 
 fi
 
-if [[ -z "$(ls -A /krb5)" ]]; then
-  echo "*** Warning default keytab (/krb5/krb5.keytab) or default client keytab (/krb5/client.keytab) not found"
-fi
-
 while true
 do
   echo "*** kinit at "+$(date -I)
