@@ -116,7 +116,7 @@ The steps are:
     kubectl -n default-tenant exec -ti krb-client-krb-client-client -c krbclient -- /bin/bash
     ```
 
-2. Verify that the sidecar indeed was able to share the ticker cache properly with this container:
+2. Verify that the sidecar indeed was able to share the ticket cache properly with this container:
 
     ```bash
     $ klist
@@ -141,7 +141,7 @@ The steps are:
     ```
 
     It will ask for a password, which is expected.
-4. If you not exit the `ssh` connection, and look at the Kerberos tickets on the client side, you'll see a new ticket for the server host besides the `TGT` that was there earlier:
+4. If you now exit the `ssh` connection, and look at the Kerberos tickets on the client side, you'll see a new ticket for the server host besides the `TGT` that was there earlier:
 
     ```bash
     $ klist
