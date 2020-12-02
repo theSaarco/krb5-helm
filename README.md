@@ -90,7 +90,6 @@ Now that you have a server running, you need to deploy a client pod that will ma
 
     ```bash
     $ kubectl -n default-tenant logs -f krb-client-krb-client-client -c sidecar
-    *** Warning default keytab (/krb5/krb5.keytab) or default client keytab (/krb5/client.keytab) not found
     *** kinit at +2020-12-02
     Using default cache: /tmp/ccache/krb5kdc_ccache
     Using principal: iguazio@EXAMPLE.COM
