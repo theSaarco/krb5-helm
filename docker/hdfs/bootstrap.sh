@@ -238,6 +238,14 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
         <name>fs.defaultFS</name>
         <value>hdfs://${default_fs}:9000</value>
     </property>
+    <property>
+        <name>hadoop.security.authentication</name>
+        <value>kerberos</value> 
+    </property>
+    <property>
+        <name>hadoop.security.authorization</name>
+        <value>true</value>
+    </property>
 </configuration>
 " > ${HADOOP_HOME}/etc/hadoop/core-site.xml
 

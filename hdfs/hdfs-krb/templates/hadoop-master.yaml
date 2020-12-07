@@ -56,7 +56,7 @@ spec:
           mountPath: {{ .Values.default_ccache_path }}
         - name: krb5-keytab
           mountPath: /etc/krb5.keytab
-          subPath: krb5.keytab
+          subPath: hdfs.keytab
       volumes:
       - name: hdfs-namenode-data
         persistentVolumeClaim:
