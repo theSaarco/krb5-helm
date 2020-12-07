@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-nn1
+  labels:
+    type: local
+spec:
+  storageClassName: name-node
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/iguazio/pv/mnt/nn1"
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hdfs-nn-pvc
+  labels:
+    name: hadoop-master
+spec:
+  storageClassName: name-node
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Gi

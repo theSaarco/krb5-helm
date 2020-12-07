@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hadoop-master
+  labels:
+    name: hadoop-master
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      name: hadoop-master
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: hadoop-master
+    spec:
+      serviceAccountName: hadoop-master
+      containers:
+      - name: master
+        image: {{ .Values.hadoop.image }}:{{ .Values.hadoop.tag }}
+        command: ["/usr/local/hadoop/sbin/bootstrap.sh"]
+        args: ["master"]
+        imagePullPolicy: {{ .Values.hadoop.pullPolicy }}
+        volumeMounts:
+        - mountPath: /hdfs
+          name: hdfs-namenode-data
+        - name: krb5-conf
+          mountPath: /etc/krb5.conf
+          subPath: krb5.conf
+        - name: ccache
+          mountPath: {{ .Values.default_ccache_path }}
+      - name: krb-sidecar
+        image: {{ .Values.sidecar.image }}:{{ .Values.sidecar.tag }}
+        imagePullPolicy: {{ .Values.sidecar.pullPolicy }}
+        command: ["/rekinit.sh"]
+        env:
+        - name: PERIOD_SECONDS
+          value: "3600"
+        - name: OPTIONS
+          value: "-k"
+        - name: APPEND_OPTIONS
+          value: "iguazio"
+        volumeMounts:
+        - name: krb5-conf
+          mountPath: /etc/krb5.conf
+          subPath: krb5.conf
+        - name: sidecar-conf
+          mountPath: /rekinit.sh
+          subPath: rekinit.sh
+        - name: ccache
+          mountPath: {{ .Values.default_ccache_path }}
+        - name: krb5-keytab
+          mountPath: /etc/krb5.keytab
+          subPath: krb5.keytab
+      volumes:
+      - name: hdfs-namenode-data
+        persistentVolumeClaim:
+          claimName: hdfs-nn-pvc
+      - name: krb5-conf
+        configMap:
+          name: kuberos-kuberos-krb5-config
+      - name: krb5-keytab
+        secret:
+          secretName: {{ .Values.krb_client_secret_name }}
+      - name: sidecar-conf
+        configMap:
+          name: {{ .Values.sidecar.configmap }}
+          defaultMode: 0755
+      - name: ccache
+        emptyDir:
+          medium: Memory
