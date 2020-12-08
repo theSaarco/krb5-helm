@@ -276,7 +276,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 
     <property>
         <name>dfs.http.policy</name>
-        <value>HTTP_ONLY</value>
+        <value>HTTPS_ONLY</value>
     </property>
     <property>
         <name>dfs.data.transfer.protection</name>
@@ -293,7 +293,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     </property>
     <property>
         <name>dfs.namenode.kerberos.principal</name>
-        <value>hdfs@EXAMPLE.COM</value>
+        <value>hdfs/_HOST@EXAMPLE.COM</value>
     </property>
     <property>
         <name>dfs.namenode.keytab.file</name>
@@ -301,7 +301,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     </property>
     <property>
         <name>dfs.datanode.kerberos.principal</name>
-        <value>hdfs@EXAMPLE.COM</value>
+        <value>hdfs/_HOST@EXAMPLE.COM</value>
     </property>
     <property>
         <name>dfs.datanode.keytab.file</name>
@@ -309,7 +309,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     </property>
     <property>
         <name>dfs.web.authentication.kerberos.principal</name>
-        <value>hdfs@EXAMPLE.COM</value>
+        <value>hdfs/_HOST@EXAMPLE.COM</value>
     </property>
     <property>
         <name>dfs.web.authentication.kerberos.keytab</name>
@@ -317,7 +317,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     </property>
     <property>
         <name>dfs.secondary.namenode.kerberos.principal</name>
-        <value>hdfs@EXAMPLE.COM</value>
+        <value>hdfs/_HOST@EXAMPLE.COM</value>
     </property>
     <property>
         <name>dfs.secondary.namenode.keytab.file</name>
@@ -325,7 +325,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     </property>
     <property>
         <name>dfs.secondary.namenode.kerberos.internal.spnego.principal</name>
-        <value>hdfs@EXAMPLE.COM</value>
+        <value>hdfs/_HOST@EXAMPLE.COM</value>
     </property>
 
 </configuration>
@@ -358,7 +358,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 
     <property>
         <name>mapreduce.jobhistory.principal</name>
-        <value>hdfs@EXAMPLE.COM</value>
+        <value>hdfs/_HOST@EXAMPLE.COM</value>
     </property>
     <property>
         <name>mapreduce.jobhistory.keytab</name>
@@ -375,7 +375,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 
     <property>
         <name>yarn.nodemanager.principal</name>
-        <value>hdfs@EXAMPLE.COM</value>
+        <value>hdfs/_HOST@EXAMPLE.COM</value>
     </property>
     <property>
         <name>yarn.nodemanager.keytab</name>
@@ -383,7 +383,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     </property>
     <property>
         <name>yarn.resourcemanager.principal</name>
-        <value>hdfs@EXAMPLE.COM</value>
+        <value>hdfs/_HOST@EXAMPLE.COM</value>
     </property>
     <property>
         <name>yarn.resourcemanager.keytab</name>
