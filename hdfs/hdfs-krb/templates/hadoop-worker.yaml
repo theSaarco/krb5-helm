@@ -25,31 +25,34 @@ spec:
         - name: krb5-conf
           mountPath: /etc/krb5.conf
           subPath: krb5.conf
-        - name: ccache
-          mountPath: {{ .Values.default_ccache_path }}
-      - name: krb-sidecar
-        image: {{ .Values.sidecar.image }}:{{ .Values.sidecar.tag }}
-        imagePullPolicy: {{ .Values.sidecar.pullPolicy }}
-        command: ["/rekinit.sh"]
-        env:
-        - name: PERIOD_SECONDS
-          value: "3600"
-        - name: OPTIONS
-          value: "-k"
-        - name: APPEND_OPTIONS
-          value: "iguazio"
-        volumeMounts:
-        - name: krb5-conf
-          mountPath: /etc/krb5.conf
-          subPath: krb5.conf
-        - name: sidecar-conf
-          mountPath: /rekinit.sh
-          subPath: rekinit.sh
-        - name: ccache
-          mountPath: {{ .Values.default_ccache_path }}
         - name: krb5-keytab
           mountPath: /etc/krb5.keytab
           subPath: hdfs.keytab
+        - name: ccache
+          mountPath: {{ .Values.default_ccache_path }}
+#      - name: krb-sidecar
+#        image: {{ .Values.sidecar.image }}:{{ .Values.sidecar.tag }}
+#        imagePullPolicy: {{ .Values.sidecar.pullPolicy }}
+#        command: ["/rekinit.sh"]
+#        env:
+#        - name: PERIOD_SECONDS
+#          value: "3600"
+#        - name: OPTIONS
+#          value: "-k"
+#        - name: APPEND_OPTIONS
+#          value: "iguazio"
+#        volumeMounts:
+#        - name: krb5-conf
+#          mountPath: /etc/krb5.conf
+#          subPath: krb5.conf
+#        - name: sidecar-conf
+#          mountPath: /rekinit.sh
+#          subPath: rekinit.sh
+#        - name: ccache
+#          mountPath: {{ .Values.default_ccache_path }}
+#        - name: krb5-keytab
+#          mountPath: /etc/krb5.keytab
+#          subPath: hdfs.keytab
       volumes:
       - name: hdfs-data
         hostPath:
