@@ -244,7 +244,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     </property>
     <property>
         <name>hadoop.security.authorization</name>
-        <value>true</value>
+        <value>false</value>
     </property>
 </configuration>
 " > ${HADOOP_HOME}/etc/hadoop/core-site.xml
@@ -273,6 +273,61 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 	<name>dfs.blocksize</name>
 	<value>${BLOCK_SIZE}</value>
     </property>
+
+    <property>
+        <name>dfs.http.policy</name>
+        <value>HTTP_ONLY</value>
+    </property>
+    <property>
+        <name>dfs.data.transfer.protection</name>
+        <value>authentication</value>
+    </property>
+    <property>
+        <name>dfs.datanode.address</name>
+        <value>0.0.0.0:30004</value>
+    </property>
+
+    <property>
+        <name>dfs.block.access.token.enable</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>dfs.namenode.kerberos.principal</name>
+        <value>hdfs@EXAMPLE.COM</value>
+    </property>
+    <property>
+        <name>dfs.namenode.keytab.file</name>
+        <value>/etc/krb5.keytab</value>
+    </property>
+    <property>
+        <name>dfs.datanode.kerberos.principal</name>
+        <value>hdfs@EXAMPLE.COM</value>
+    </property>
+    <property>
+        <name>dfs.datanode.keytab.file</name>
+        <value>/etc/krb5.keytab</value>
+    </property>
+    <property>
+        <name>dfs.web.authentication.kerberos.principal</name>
+        <value>hdfs@EXAMPLE.COM</value>
+    </property>
+    <property>
+        <name>dfs.web.authentication.kerberos.keytab</name>
+        <value>/etc/krb5.keytab</value>
+    </property>
+    <property>
+        <name>dfs.secondary.namenode.kerberos.principal</name>
+        <value>hdfs@EXAMPLE.COM</value>
+    </property>
+    <property>
+        <name>dfs.secondary.namenode.keytab.file</name>
+        <value>/etc/krb5.keytab</value>
+    </property>
+    <property>
+        <name>dfs.secondary.namenode.kerberos.internal.spnego.principal</name>
+        <value>hdfs@EXAMPLE.COM</value>
+    </property>
+
 </configuration>
 " > ${HADOOP_HOME}/etc/hadoop/hdfs-site.xml
 
@@ -298,8 +353,18 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     </property>
     <property>
 	<name>mapreduce.reduce.java.opts</name>
-    <value>-Xmx${REDUCE_JAVA_MEMORY}m</value>
-</property>
+        <value>-Xmx${REDUCE_JAVA_MEMORY}m</value>
+    </property>
+
+    <property>
+        <name>mapreduce.jobhistory.principal</name>
+        <value>hdfs@EXAMPLE.COM</value>
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.keytab</name>
+        <value>/etc/krb5.keytab</value>
+    </property>
+
 </configuration>
 " > ${HADOOP_HOME}/etc/hadoop/mapred-site.xml
 
@@ -307,6 +372,24 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <?xml-stylesheet type=\"text/xsl\" href=\"configuration.xsl\"?>
 
 <configuration>
+
+    <property>
+        <name>yarn.nodemanager.principal</name>
+        <value>hdfs@EXAMPLE.COM</value>
+    </property>
+    <property>
+        <name>yarn.nodemanager.keytab</name>
+        <value>/etc/krb5.keytab</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.principal</name>
+        <value>hdfs@EXAMPLE.COM</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.keytab</name>
+        <value>/etc/krb5.keytab</value>
+    </property>
+
     <property>
         <name>yarn.resourcemanager.resource-tracker.address</name>
         <value>${resource_tracker_addr}:8031</value>
@@ -387,7 +470,6 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 	<name>yarn.nodemanager.vmem-pmem-ratio</name>
 	<value>4</value>
     </property>
-
 </configuration>
 " > ${HADOOP_HOME}/etc/hadoop/yarn-site.xml
 
