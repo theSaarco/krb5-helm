@@ -51,6 +51,8 @@ COPY bootstrap.sh /usr/local/hadoop/sbin/bootstrap.sh
 
 RUN chmod 755 /usr/local/hadoop/sbin/bootstrap.sh
 
+COPY ssl-server.xml /usr/local/hadoop/etc/hadoop/ssl-server.xml
+
 RUN useradd -ms /bin/bash iguazio
 
 ENTRYPOINT ["/usr/local/hadoop/sbin/bootstrap.sh"]
