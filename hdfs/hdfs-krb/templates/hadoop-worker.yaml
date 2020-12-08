@@ -1,75 +1,70 @@
-apiVersion: apps/v1
-kind: DaemonSet
+apiVersion: v1
+kind: Pod
 metadata:
   name: hadoop-worker
 spec:
-  selector:
-    matchLabels:
-      name: hadoop-worker
-  template:
-    metadata:
-      labels:
-        name: hadoop-worker
-    spec:
-      # hostNetwork: true
-      serviceAccountName: hadoop-master
-      containers:
-      - name: worker
-        image: {{ .Values.hadoop.image }}:{{ .Values.hadoop.tag }}
-        imagePullPolicy: {{ .Values.hadoop.pullPolicy }}
-        command: ["/usr/local/hadoop/sbin/bootstrap.sh"]
-        args: ["worker"]
-        volumeMounts:
-        - mountPath: /hdfs
-          name: hdfs-data
-        - name: krb5-conf
-          mountPath: /etc/krb5.conf
-          subPath: krb5.conf
-        - name: krb5-keytab
-          mountPath: /etc/krb5.keytab
-          subPath: hdfs.keytab
-        - name: ccache
-          mountPath: {{ .Values.default_ccache_path }}
-#      - name: krb-sidecar
-#        image: {{ .Values.sidecar.image }}:{{ .Values.sidecar.tag }}
-#        imagePullPolicy: {{ .Values.sidecar.pullPolicy }}
-#        command: ["/rekinit.sh"]
-#        env:
-#        - name: PERIOD_SECONDS
-#          value: "3600"
-#        - name: OPTIONS
-#          value: "-k"
-#        - name: APPEND_OPTIONS
-#          value: "iguazio"
-#        volumeMounts:
-#        - name: krb5-conf
-#          mountPath: /etc/krb5.conf
-#          subPath: krb5.conf
-#        - name: sidecar-conf
-#          mountPath: /rekinit.sh
-#          subPath: rekinit.sh
-#        - name: ccache
-#          mountPath: {{ .Values.default_ccache_path }}
-#        - name: krb5-keytab
-#          mountPath: /etc/krb5.keytab
-#          subPath: hdfs.keytab
-      volumes:
-      - name: hdfs-data
-        hostPath:
-          path: {{ .Values.hostDataPath }}
-      - name: hdfs-namenode-data
-        persistentVolumeClaim:
-          claimName: hdfs-nn-pvc
-      - name: krb5-conf
-        configMap:
-          name: kuberos-kuberos-krb5-config
-      - name: krb5-keytab
-        secret:
-          secretName: {{ .Values.krb_client_secret_name }}
-      - name: sidecar-conf
-        configMap:
-          name: {{ .Values.sidecar.configmap }}
-          defaultMode: 0755
-      - name: ccache
-        emptyDir:
-          medium: Memory
+# hostNetwork: true
+  serviceAccountName: hadoop-master
+  containers:
+  - name: worker
+    image: {{ .Values.hadoop.image }}:{{ .Values.hadoop.tag }}
+    imagePullPolicy: {{ .Values.hadoop.pullPolicy }}
+    command: ["/usr/local/hadoop/sbin/bootstrap.sh"]
+    args: ["worker"]
+    volumeMounts:
+    - mountPath: /hdfs
+      name: hdfs-data
+    - name: krb5-conf
+      mountPath: /etc/krb5.conf
+      subPath: krb5.conf
+    - name: krb5-keytab
+      mountPath: /etc/krb5.keytab
+      subPath: hdfs.keytab
+    - name: krb5-keytab
+      mountPath: /etc/hdfs.jks
+      subPath: hdfs.jks
+    - name: ccache
+      mountPath: {{ .Values.default_ccache_path }}
+#  - name: krb-sidecar
+#    image: {{ .Values.sidecar.image }}:{{ .Values.sidecar.tag }}
+#    imagePullPolicy: {{ .Values.sidecar.pullPolicy }}
+#    command: ["/rekinit.sh"]
+#    env:
+#    - name: PERIOD_SECONDS
+#      value: "3600"
+#    - name: OPTIONS
+#      value: "-k"
+#    - name: APPEND_OPTIONS
+#      value: "iguazio"
+#    volumeMounts:
+#    - name: krb5-conf
+#      mountPath: /etc/krb5.conf
+#      subPath: krb5.conf
+#    - name: sidecar-conf
+#      mountPath: /rekinit.sh
+#      subPath: rekinit.sh
+#    - name: ccache
+#      mountPath: {{ .Values.default_ccache_path }}
+#    - name: krb5-keytab
+#      mountPath: /etc/krb5.keytab
+#      subPath: hdfs.keytab
+  volumes:
+  - name: hdfs-data
+    hostPath:
+      path: {{ .Values.hostDataPath }}
+  - name: hdfs-namenode-data
+    persistentVolumeClaim:
+      claimName: hdfs-nn-pvc
+  - name: krb5-conf
+    configMap:
+      name: kuberos-kuberos-krb5-config
+  - name: krb5-keytab
+    secret:
+      secretName: {{ .Values.krb_client_secret_name }}
+  - name: sidecar-conf
+    configMap:
+      name: {{ .Values.sidecar.configmap }}
+      defaultMode: 0755
+  - name: ccache
+    emptyDir:
+      medium: Memory
