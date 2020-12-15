@@ -1,50 +1,12 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: hadoop-master
-  labels:
-    name: hadoop-master-services
+  name: hadoop-domain
 spec:
   selector:
-    name: hadoop-master
+    name: hadoop
+  clusterIP: None
   ports:
-  - name: port-0
-    port: 8030
-  - name: port-1
-    port: 8031
-  - name: port-2
-    port: 8032
-  - name: port-3
-    port: 8033
-  - name: port-4
-    port: 8040
-  - name: port-5
-    port: 8042
-  - name: port-6
-    port: 8088
-  - name: port-7
-    port: 9000
-  - name: port-8
-    port: 9864
-  - name: port-9
-    port: 9866
-  - name: port-10
-    port: 9867
-  - name: port-11
-    port: 9868
-  - name: port-12
-    port: 9870
-  - name: port-13
-    port: 10020
-  - name: port-14
-    port: 10033
-  - name: port-15
-    port: 13562
-  - name: port-16
-    port: 19888
-  - name: port-17
-    port: 33011
-  - name: port-18
-    port: 37319
-  - name: port-19
-    port: 40469          
+  - name: foo
+    port: 1234
+    targetPort: 1234

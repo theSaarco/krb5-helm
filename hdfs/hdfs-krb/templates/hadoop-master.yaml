@@ -3,9 +3,11 @@ kind: Pod
 metadata:
   name: hadoop-master
   labels:
-    name: hadoop-master
+    name: hadoop
 spec:
   serviceAccountName: hadoop-master
+  hostname: hadoop-master
+  subdomain: hadoop-domain
   containers:
   - name: master
     image: {{ .Values.hadoop.image }}:{{ .Values.hadoop.tag }}
