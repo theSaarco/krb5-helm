@@ -529,6 +529,11 @@ echo "
 " > ${HADOOP_CONF_DIR}/fair-scheduler.xml
 
 ##########
+# Initialize Kerberos
+kinit -k hdfs/${default_fs}
+klist 
+
+##########
 # Start Hadoop services
 
 if [ "${role}" == "pseudo" ];

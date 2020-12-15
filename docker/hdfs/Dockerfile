@@ -15,11 +15,6 @@ RUN mkdir /tmp/hadoop && \
     mv -v /tmp/hadoop/hadoop-${HADOOP_VERSION} /usr/local/hadoop-${HADOOP_VERSION} && \
     cd /usr/local && ln -s ./hadoop-${HADOOP_VERSION} hadoop
 
-# ENV HDFS_NAMENODE_USER=root
-# ENV HDFS_DATANODE_USER=root
-# ENV HDFS_SECONDARYNAMENODE_USER=root
-# ENV YARN_RESOURCEMANAGER_USER=root
-# ENV YARN_NODEMANAGER_USER=root
 ENV HADOOP_HOME=/usr/local/hadoop
 ENV HADOOP_COMMON_HOME=/usr/local/hadoop
 ENV HADOOP_HDFS_HOME=/usr/local/hadoop
@@ -27,7 +22,6 @@ ENV HADOOP_MAPRED_HOME=/usr/local/hadoop
 ENV HADOOP_YARN_HOME=/usr/local/hadoop
 ENV HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop
 ENV YARN_CONF_DIR=/usr/local/hadoop/etc/hadoop
-
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -qq update && \
