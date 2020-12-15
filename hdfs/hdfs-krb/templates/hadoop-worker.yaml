@@ -14,6 +14,9 @@ spec:
     imagePullPolicy: {{ .Values.hadoop.pullPolicy }}
     command: ["/usr/local/hadoop/sbin/bootstrap.sh"]
     args: ["worker"]
+    env:
+    - name: KRB5CCNAME
+      value: {{ .Values.default_ccache_path}}/{{ .Values.ccache_filename }}
     volumeMounts:
     - mountPath: /hdfs
       name: hdfs-data

@@ -14,6 +14,9 @@ spec:
     command: ["/usr/local/hadoop/sbin/bootstrap.sh"]
     args: ["master"]
     imagePullPolicy: {{ .Values.hadoop.pullPolicy }}
+    env:
+    - name: KRB5CCNAME
+      value: {{ .Values.default_ccache_path}}/{{ .Values.ccache_filename }}
     volumeMounts:
     - mountPath: /hdfs
       name: hdfs-namenode-data
@@ -28,6 +31,7 @@ spec:
       subPath: hdfs.jks
     - name: ccache
       mountPath: {{ .Values.default_ccache_path }}
+
 #  - name: krb-sidecar
 #    image: {{ .Values.sidecar.image }}:{{ .Values.sidecar.tag }}
 #    imagePullPolicy: {{ .Values.sidecar.pullPolicy }}
@@ -51,6 +55,7 @@ spec:
 #    - name: krb5-keytab
 #      mountPath: /etc/krb5.keytab
 #      subPath: hdfs.keytab
+
   volumes:
   - name: hdfs-namenode-data
     persistentVolumeClaim:
