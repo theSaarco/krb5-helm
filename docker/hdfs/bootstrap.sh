@@ -211,21 +211,28 @@ mkdir /run/sshd
 mkdir -p /hdfs/data/dfs/dn
 mkdir -p /hdfs/namenode/dfs/nn
 
-if [ "${role}" == "worker" ];
-then
-	if [ "${environment}" == "kubernetes" ];
-	then
-		namespace=$(</var/run/secrets/kubernetes.io/serviceaccount/namespace)
-		default_fs="hadoop-master.${namespace}.svc.cluster.local"
-		resource_tracker_addr="hadoop-master.${namespace}.svc.cluster.local"
-	else
-		default_fs="hadoop-master"
-		resource_tracker_addr="hadoop-master"
-	fi
-else
-	default_fs="0.0.0.0"
-	resource_tracker_addr="0.0.0.0"
-fi
+# if [ "${role}" == "worker" ];
+# then
+#         default_fs="hadoop-master.hadoop-domain.default-tenant.svc.cluster.local"
+#         resource_tracker_addr="hadoop-master.hadoop-domain.default-tenant.svc.cluster.local"
+# 
+#	if [ "${environment}" == "kubernetes" ];
+#	then
+#		namespace=$(</var/run/secrets/kubernetes.io/serviceaccount/namespace)
+#		default_fs="hadoop-master.${namespace}.svc.cluster.local"
+#		resource_tracker_addr="hadoop-master.${namespace}.svc.cluster.local"
+#	else
+#		default_fs="hadoop-master"
+#		resource_tracker_addr="hadoop-master"
+#	fi
+# 
+# else
+# 	default_fs="0.0.0.0"
+# 	resource_tracker_addr="0.0.0.0"
+# fi
+
+default_fs="hadoop-master.hadoop-domain.default-tenant.svc.cluster.local"
+resource_tracker_addr="hadoop-master.hadoop-domain.default-tenant.svc.cluster.local"
 
 ##########
 # Create Hadoop configuration files
@@ -244,7 +251,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     </property>
     <property>
         <name>hadoop.security.authorization</name>
-        <value>false</value>
+        <value>true</value>
     </property>
 </configuration>
 " > ${HADOOP_HOME}/etc/hadoop/core-site.xml
@@ -275,6 +282,11 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     </property>
 
     <property>
+        <name>dfs.namenode.kerberos.principal.pattern</name>
+        <value>hdfs/*@EXAMPLE.COM</value>
+    </property>
+
+    <property>
         <name>dfs.http.policy</name>
         <value>HTTPS_ONLY</value>
     </property>
@@ -283,14 +295,11 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
         <value>authentication</value>
     </property>
     <property>
-        <name>dfs.datanode.address</name>
-        <value>0.0.0.0:30004</value>
-    </property>
-
-    <property>
         <name>dfs.block.access.token.enable</name>
         <value>true</value>
     </property>
+
+<!-- Primary namenode security config -->
     <property>
         <name>dfs.namenode.kerberos.principal</name>
         <value>hdfs/_HOST@EXAMPLE.COM</value>
@@ -300,6 +309,12 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
         <value>/etc/krb5.keytab</value>
     </property>
     <property>
+        <name>dfs.namenode.kerberos.internal.spnego.principal</name>
+        <value>HTTP/_HOST@EXAMPLE.COM</value>
+    </property>
+
+<!-- DataNode security config -->
+    <property>
         <name>dfs.datanode.kerberos.principal</name>
         <value>hdfs/_HOST@EXAMPLE.COM</value>
     </property>
@@ -308,6 +323,16 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
         <value>/etc/krb5.keytab</value>
     </property>
     <property>
+        <name>dfs.datanode.address</name>
+        <value>0.0.0.0:30004</value>
+    </property>
+    <property>
+        <name>dfs.datanode.http.address</name>
+        <value>0.0.0.0:30006</value>
+    </property>
+
+<!-- Web authentication config -->
+    <property>
         <name>dfs.web.authentication.kerberos.principal</name>
         <value>hdfs/_HOST@EXAMPLE.COM</value>
     </property>
@@ -315,6 +340,8 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
         <name>dfs.web.authentication.kerberos.keytab</name>
         <value>/etc/krb5.keytab</value>
     </property>
+
+<!-- Secondary NameNode security config -->
     <property>
         <name>dfs.secondary.namenode.kerberos.principal</name>
         <value>hdfs/_HOST@EXAMPLE.COM</value>
@@ -325,7 +352,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     </property>
     <property>
         <name>dfs.secondary.namenode.kerberos.internal.spnego.principal</name>
-        <value>hdfs/_HOST@EXAMPLE.COM</value>
+        <value>HTTP/_HOST@EXAMPLE.COM</value>
     </property>
 
 </configuration>
