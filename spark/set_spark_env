@@ -1,0 +1,3 @@
+export KRB5CCNAME=FILE:/User/spark/krb5kdc_ccache
+export KRB5_CONFIG=/User/spark/hadoop/krb5.conf
+export HADOOP_CONF_DIR=/User/spark/hadoop
