@@ -1,0 +1,187 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2020-12-27T09:03:47Z"
+  labels:
+    spark-app-selector: spark-application-1609059825532
+    spark-exec-id: "1"
+    spark-role: executor
+  name: example-3888eb76a370741e-exec-1
+  namespace: default-tenant
+  ownerReferences:
+  - apiVersion: v1
+    controller: true
+    kind: Pod
+    name: jupyter-66d444d7c8-p7gnv
+    uid: 6f03ac80-5f44-47d2-9063-4d1c0eda4579
+  resourceVersion: "1218181"
+  selfLink: /api/v1/namespaces/default-tenant/pods/example-3888eb76a370741e-exec-1
+  uid: d79008d0-e894-448b-8566-9f23d9ee16d3
+spec:
+  containers:
+  - args:
+    - executor
+    env:
+    - name: V3IO_API
+      value: v3io-webapi.default-tenant.svc:8081
+    - name: V3IO_FRAMESD
+      value: framesd:8081
+    - name: IGZ_DATA_CONFIG_FILE
+      value: /etc/config/v3io/v3io.conf
+    - name: CURRENT_NODE_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.hostIP
+    - name: SPARK_USER
+      value: hdfs
+    - name: SPARK_DRIVER_URL
+      value: spark://CoarseGrainedScheduler@10.200.0.60:34007
+    - name: SPARK_EXECUTOR_CORES
+      value: "1"
+    - name: SPARK_EXECUTOR_MEMORY
+      value: 2G
+    - name: SPARK_APPLICATION_ID
+      value: spark-application-1609059825532
+    - name: SPARK_CONF_DIR
+      value: /opt/spark/conf
+    - name: SPARK_EXECUTOR_ID
+      value: "1"
+    - name: V3IO_USERNAME
+      value: admin
+    - name: V3IO_ACCESS_KEY
+      value: 7f1e3734-5bf5-4680-9d16-25d19a95aade
+    - name: HADOOP_CONF_DIR
+      value: /User/spark/hadoop/
+    - name: SPARK_EXECUTOR_POD_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+    - name: SPARK_JAVA_OPT_0
+      value: -Dsun.zip.disableMemoryMapping=true
+    - name: SPARK_JAVA_OPT_1
+      value: -Djava.security.krb5.conf=/User/spark/krb5.conf
+    - name: SPARK_JAVA_OPT_2
+      value: -Dspark.driver.port=34007
+    - name: SPARK_LOCAL_DIRS
+      value: /var/data/spark-dc7544c2-d9fe-4eba-9cc9-fd10a57c73da
+    image: spark-exec/spark-py:latest
+    imagePullPolicy: IfNotPresent
+    name: spark-kubernetes-executor
+    ports:
+    - containerPort: 7079
+      name: blockmanager
+      protocol: TCP
+    resources:
+      limits:
+        memory: 2432Mi
+      requests:
+        cpu: "1"
+        memory: 2432Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /v3io
+      name: v3io-fuse
+    - mountPath: /User
+      name: v3io-fuse
+      subPath: users//admin
+    - mountPath: /etc/config/v3io
+      name: v3io-config
+    - mountPath: /igz/java/crash
+      name: igz-java
+    - mountPath: /dev/shm
+      name: shm
+    - mountPath: /var/run/iguazio/dayman
+      name: v3iod-comm
+    - mountPath: /var/data/spark-dc7544c2-d9fe-4eba-9cc9-fd10a57c73da
+      name: spark-local-dir-1
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-787ln
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostname: example-3888eb76a370741e-exec-1
+  nodeName: k8s-node1
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - flexVolume:
+      driver: v3io/fuse
+      options:
+        dirsToCreate: '[{"name": "users//admin", "permissions": 488}]'
+      secretRef:
+        name: jupyter-v3io-fuse
+    name: v3io-fuse
+  - configMap:
+      defaultMode: 420
+      name: spark-worker-v3io-config
+    name: v3io-config
+  - emptyDir: {}
+    name: igz-java
+  - hostPath:
+      path: /dev/shm/default-tenant
+      type: ""
+    name: shm
+  - hostPath:
+      path: /var/run/iguazio/dayman/default-tenant
+      type: ""
+    name: v3iod-comm
+  - emptyDir: {}
+    name: spark-local-dir-1
+  - name: default-token-787ln
+    secret:
+      defaultMode: 420
+      secretName: default-token-787ln
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2020-12-27T09:03:47Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2020-12-27T09:03:50Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2020-12-27T09:03:50Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2020-12-27T09:03:47Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://73f267e8e75703b60bfa27205c279126de6e5bbd8920fe9893e08d0fb83ab05b
+    image: spark-exec/spark-py:latest
+    imageID: docker://sha256:7d635ad30150a6fc33d762840cc9f085b96e523dccc02f780504e3a10d8f088b
+    lastState: {}
+    name: spark-kubernetes-executor
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2020-12-27T09:03:50Z"
+  hostIP: 172.31.10.30
+  phase: Running
+  podIP: 10.200.0.56
+  podIPs:
+  - ip: 10.200.0.56
+  qosClass: Burstable
+  startTime: "2020-12-27T09:03:47Z"

@@ -1,0 +1,7 @@
+v3io.client {
+    socket.host=10.200.0.23
+    session.use-system-user=false
+    on-failure.state.path=/igz/java/crash/.crash
+}
+v3io.config.auth.file=/etc/config/v3io/v3io.java.auth
+new-daemon=true

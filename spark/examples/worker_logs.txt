@@ -1,0 +1,606 @@
+++ id -u
++ myuid=1000
+++ id -g
++ mygid=0
++ set +e
+++ getent passwd 1000
++ uidentry=
++ set -e
++ '[' -z '' ']'
++ '[' -w /etc/passwd ']'
++ echo '1000:x:1000:0:anonymous uid:/opt/spark:/bin/false'
++ SPARK_CLASSPATH=':/opt/spark/jars/*'
++ env
++ grep SPARK_JAVA_OPT_
++ sort -t_ -k4 -n
++ sed 's/[^=]*=\(.*\)/\1/g'
++ readarray -t SPARK_EXECUTOR_JAVA_OPTS
++ '[' -n '' ']'
++ '[' '' == 2 ']'
++ '[' '' == 3 ']'
++ '[' -n '' ']'
++ '[' -z x ']'
++ SPARK_CLASSPATH='/User/spark/hadoop/::/opt/spark/jars/*'
++ case "$1" in
++ shift 1
++ CMD=(${JAVA_HOME}/bin/java "${SPARK_EXECUTOR_JAVA_OPTS[@]}" -Xms$SPARK_EXECUTOR_MEMORY -Xmx$SPARK_EXECUTOR_MEMORY -cp "$SPARK_CLASSPATH:$SPARK_DIST_CLASSPATH" org.apache.spark.executor.CoarseGrainedExecutorBackend --driver-url $SPARK_DRIVER_URL --executor-id $SPARK_EXECUTOR_ID --cores $SPARK_EXECUTOR_CORES --app-id $SPARK_APPLICATION_ID --hostname $SPARK_EXECUTOR_POD_IP)
++ exec /usr/bin/tini -s -- /usr/local/openjdk-8/bin/java -Dsun.zip.disableMemoryMapping=true -Djava.security.krb5.conf=/User/spark/krb5.conf -Dspark.driver.port=34007 -Xms2G -Xmx2G -cp '/User/spark/hadoop/::/opt/spark/jars/*:' org.apache.spark.executor.CoarseGrainedExecutorBackend --driver-url spark://CoarseGrainedScheduler@10.200.0.60:34007 --executor-id 1 --cores 1 --app-id spark-application-1609059825532 --hostname 10.200.0.56
+20/12/27 09:03:51 INFO CoarseGrainedExecutorBackend: Started daemon with process name: 13@example-3888eb76a370741e-exec-1
+20/12/27 09:03:51 INFO SignalUtils: Registered signal handler for TERM
+20/12/27 09:03:51 INFO SignalUtils: Registered signal handler for HUP
+20/12/27 09:03:51 INFO SignalUtils: Registered signal handler for INT
+20/12/27 09:03:52 DEBUG MutableMetricsFactory: field org.apache.hadoop.metrics2.lib.MutableRate org.apache.hadoop.security.UserGroupInformation$UgiMetrics.loginSuccess with annotation @org.apache.hadoop.metrics2.annotation.Metric(sampleName=Ops, about=, always=false, type=DEFAULT, valueName=Time, value=[Rate of successful kerberos logins and latency (milliseconds)])
+20/12/27 09:03:52 DEBUG MutableMetricsFactory: field org.apache.hadoop.metrics2.lib.MutableRate org.apache.hadoop.security.UserGroupInformation$UgiMetrics.loginFailure with annotation @org.apache.hadoop.metrics2.annotation.Metric(sampleName=Ops, about=, always=false, type=DEFAULT, valueName=Time, value=[Rate of failed kerberos logins and latency (milliseconds)])
+20/12/27 09:03:52 DEBUG MutableMetricsFactory: field org.apache.hadoop.metrics2.lib.MutableRate org.apache.hadoop.security.UserGroupInformation$UgiMetrics.getGroups with annotation @org.apache.hadoop.metrics2.annotation.Metric(sampleName=Ops, about=, always=false, type=DEFAULT, valueName=Time, value=[GetGroups])
+20/12/27 09:03:52 DEBUG MetricsSystemImpl: UgiMetrics, User and group related metrics
+20/12/27 09:03:52 DEBUG Shell: Failed to detect a valid hadoop home directory
+java.io.IOException: HADOOP_HOME or hadoop.home.dir are not set.
+	at org.apache.hadoop.util.Shell.checkHadoopHome(Shell.java:329)
+	at org.apache.hadoop.util.Shell.<clinit>(Shell.java:354)
+	at org.apache.hadoop.util.StringUtils.<clinit>(StringUtils.java:80)
+	at org.apache.hadoop.security.SecurityUtil.getAuthenticationMethod(SecurityUtil.java:611)
+	at org.apache.hadoop.security.UserGroupInformation.initialize(UserGroupInformation.java:274)
+	at org.apache.hadoop.security.UserGroupInformation.setConfiguration(UserGroupInformation.java:313)
+	at org.apache.spark.deploy.SparkHadoopUtil.<init>(SparkHadoopUtil.scala:50)
+	at org.apache.spark.deploy.SparkHadoopUtil$.instance$lzycompute(SparkHadoopUtil.scala:397)
+	at org.apache.spark.deploy.SparkHadoopUtil$.instance(SparkHadoopUtil.scala:397)
+	at org.apache.spark.deploy.SparkHadoopUtil$.get(SparkHadoopUtil.scala:418)
+	at org.apache.spark.executor.CoarseGrainedExecutorBackend$.run(CoarseGrainedExecutorBackend.scala:283)
+	at org.apache.spark.executor.CoarseGrainedExecutorBackend$.main(CoarseGrainedExecutorBackend.scala:272)
+	at org.apache.spark.executor.CoarseGrainedExecutorBackend.main(CoarseGrainedExecutorBackend.scala)
+20/12/27 09:03:52 DEBUG Shell: setsid exited with exit code 0
+20/12/27 09:03:52 DEBUG Groups:  Creating new Groups object
+20/12/27 09:03:52 DEBUG NativeCodeLoader: Trying to load the custom-built native-hadoop library...
+20/12/27 09:03:52 DEBUG NativeCodeLoader: Failed to load native-hadoop with error: java.lang.UnsatisfiedLinkError: no hadoop in java.library.path
+20/12/27 09:03:52 DEBUG NativeCodeLoader: java.library.path=/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib
+20/12/27 09:03:52 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+20/12/27 09:03:52 DEBUG PerformanceAdvisory: Falling back to shell based
+20/12/27 09:03:52 DEBUG JniBasedUnixGroupsMappingWithFallback: Group mapping impl=org.apache.hadoop.security.ShellBasedUnixGroupsMapping
+20/12/27 09:03:52 DEBUG Groups: Group mapping impl=org.apache.hadoop.security.JniBasedUnixGroupsMappingWithFallback; cacheTimeout=300000; warningDeltaMs=5000
+20/12/27 09:03:52 DEBUG SparkHadoopUtil: creating UGI for user: hdfs
+20/12/27 09:03:52 DEBUG UserGroupInformation: hadoop login
+20/12/27 09:03:52 DEBUG UserGroupInformation: hadoop login commit
+20/12/27 09:03:52 DEBUG UserGroupInformation: using kerberos user:null
+20/12/27 09:03:52 DEBUG UserGroupInformation: using local user:UnixPrincipal: 1000
+20/12/27 09:03:52 DEBUG UserGroupInformation: Using user: "UnixPrincipal: 1000" with name 1000
+20/12/27 09:03:52 DEBUG UserGroupInformation: User entry: "1000"
+20/12/27 09:03:52 DEBUG UserGroupInformation: Assuming keytab is managed externally since logged in from subject.
+20/12/27 09:03:52 DEBUG UserGroupInformation: UGI loginUser:1000 (auth:KERBEROS)
+20/12/27 09:03:52 DEBUG UserGroupInformation: PrivilegedAction as:hdfs (auth:SIMPLE) from:org.apache.spark.deploy.SparkHadoopUtil.runAsSparkUser(SparkHadoopUtil.scala:61)
+20/12/27 09:03:52 INFO SecurityManager: Changing view acls to: 1000,hdfs
+20/12/27 09:03:52 INFO SecurityManager: Changing modify acls to: 1000,hdfs
+20/12/27 09:03:52 INFO SecurityManager: Changing view acls groups to: 
+20/12/27 09:03:52 INFO SecurityManager: Changing modify acls groups to: 
+20/12/27 09:03:52 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users  with view permissions: Set(1000, hdfs); groups with view permissions: Set(); users  with modify permissions: Set(1000, hdfs); groups with modify permissions: Set()
+20/12/27 09:03:52 DEBUG InternalLoggerFactory: Using SLF4J as the default logging framework
+20/12/27 09:03:52 DEBUG InternalThreadLocalMap: -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+20/12/27 09:03:52 DEBUG InternalThreadLocalMap: -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+20/12/27 09:03:52 DEBUG MultithreadEventLoopGroup: -Dio.netty.eventLoopThreads: 32
+20/12/27 09:03:52 DEBUG NioEventLoop: -Dio.netty.noKeySetOptimization: false
+20/12/27 09:03:52 DEBUG NioEventLoop: -Dio.netty.selectorAutoRebuildThreshold: 512
+20/12/27 09:03:53 DEBUG PlatformDependent0: -Dio.netty.noUnsafe: false
+20/12/27 09:03:53 DEBUG PlatformDependent0: Java version: 8
+20/12/27 09:03:53 DEBUG PlatformDependent0: sun.misc.Unsafe.theUnsafe: available
+20/12/27 09:03:53 DEBUG PlatformDependent0: sun.misc.Unsafe.copyMemory: available
+20/12/27 09:03:53 DEBUG PlatformDependent0: java.nio.Buffer.address: available
+20/12/27 09:03:53 DEBUG PlatformDependent0: direct buffer constructor: available
+20/12/27 09:03:53 DEBUG PlatformDependent0: java.nio.Bits.unaligned: available, true
+20/12/27 09:03:53 DEBUG PlatformDependent0: jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable prior to Java9
+20/12/27 09:03:53 DEBUG PlatformDependent0: java.nio.DirectByteBuffer.<init>(long, int): available
+20/12/27 09:03:53 DEBUG PlatformDependent: sun.misc.Unsafe: available
+20/12/27 09:03:53 DEBUG PlatformDependent: -Dio.netty.tmpdir: /tmp (java.io.tmpdir)
+20/12/27 09:03:53 DEBUG PlatformDependent: -Dio.netty.bitMode: 64 (sun.arch.data.model)
+20/12/27 09:03:53 DEBUG PlatformDependent: -Dio.netty.maxDirectMemory: 2058354688 bytes
+20/12/27 09:03:53 DEBUG PlatformDependent: -Dio.netty.uninitializedArrayAllocationThreshold: -1
+20/12/27 09:03:53 DEBUG CleanerJava6: java.nio.ByteBuffer.cleaner(): available
+20/12/27 09:03:53 DEBUG PlatformDependent: -Dio.netty.noPreferDirect: false
+20/12/27 09:03:53 DEBUG PlatformDependent: org.jctools-core.MpscChunkedArrayQueue: available
+20/12/27 09:03:53 DEBUG ResourceLeakDetector: -Dio.netty.leakDetection.level: simple
+20/12/27 09:03:53 DEBUG ResourceLeakDetector: -Dio.netty.leakDetection.targetRecords: 4
+20/12/27 09:03:53 DEBUG PooledByteBufAllocator: -Dio.netty.allocator.numHeapArenas: 20
+20/12/27 09:03:53 DEBUG PooledByteBufAllocator: -Dio.netty.allocator.numDirectArenas: 20
+20/12/27 09:03:53 DEBUG PooledByteBufAllocator: -Dio.netty.allocator.pageSize: 8192
+20/12/27 09:03:53 DEBUG PooledByteBufAllocator: -Dio.netty.allocator.maxOrder: 11
+20/12/27 09:03:53 DEBUG PooledByteBufAllocator: -Dio.netty.allocator.chunkSize: 16777216
+20/12/27 09:03:53 DEBUG PooledByteBufAllocator: -Dio.netty.allocator.tinyCacheSize: 512
+20/12/27 09:03:53 DEBUG PooledByteBufAllocator: -Dio.netty.allocator.smallCacheSize: 256
+20/12/27 09:03:53 DEBUG PooledByteBufAllocator: -Dio.netty.allocator.normalCacheSize: 64
+20/12/27 09:03:53 DEBUG PooledByteBufAllocator: -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+20/12/27 09:03:53 DEBUG PooledByteBufAllocator: -Dio.netty.allocator.cacheTrimInterval: 8192
+20/12/27 09:03:53 DEBUG PooledByteBufAllocator: -Dio.netty.allocator.cacheTrimIntervalMillis: 0
+20/12/27 09:03:53 DEBUG PooledByteBufAllocator: -Dio.netty.allocator.useCacheForAllThreads: true
+20/12/27 09:03:53 DEBUG PooledByteBufAllocator: -Dio.netty.allocator.maxCachedByteBuffersPerChunk: 1023
+20/12/27 09:03:53 DEBUG TransportClientFactory: Creating new connection to /10.200.0.60:34007
+20/12/27 09:03:53 DEBUG DefaultChannelId: -Dio.netty.processId: 13 (auto-detected)
+20/12/27 09:03:53 DEBUG NetUtil: -Djava.net.preferIPv4Stack: false
+20/12/27 09:03:53 DEBUG NetUtil: -Djava.net.preferIPv6Addresses: false
+20/12/27 09:03:53 DEBUG NetUtil: Loopback interface: lo (lo, 127.0.0.1)
+20/12/27 09:03:53 DEBUG NetUtil: /proc/sys/net/core/somaxconn: 128
+20/12/27 09:03:53 DEBUG DefaultChannelId: -Dio.netty.machineId: 8e:9e:6d:ff:fe:c2:70:b9 (auto-detected)
+20/12/27 09:03:53 DEBUG ByteBufUtil: -Dio.netty.allocator.type: pooled
+20/12/27 09:03:53 DEBUG ByteBufUtil: -Dio.netty.threadLocalDirectBufferSize: 0
+20/12/27 09:03:53 DEBUG ByteBufUtil: -Dio.netty.maxThreadLocalCharBufferSize: 16384
+20/12/27 09:03:53 DEBUG AbstractByteBuf: -Dio.netty.buffer.checkAccessible: true
+20/12/27 09:03:53 DEBUG AbstractByteBuf: -Dio.netty.buffer.checkBounds: true
+20/12/27 09:03:53 DEBUG ResourceLeakDetectorFactory: Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@5c3c193f
+20/12/27 09:03:53 DEBUG TransportClientFactory: Connection to /10.200.0.60:34007 successful, running bootstraps...
+20/12/27 09:03:53 INFO TransportClientFactory: Successfully created connection to /10.200.0.60:34007 after 163 ms (0 ms spent in bootstraps)
+20/12/27 09:03:53 DEBUG Recycler: -Dio.netty.recycler.maxCapacityPerThread: 4096
+20/12/27 09:03:53 DEBUG Recycler: -Dio.netty.recycler.maxSharedCapacityFactor: 2
+20/12/27 09:03:53 DEBUG Recycler: -Dio.netty.recycler.linkCapacity: 16
+20/12/27 09:03:53 DEBUG Recycler: -Dio.netty.recycler.ratio: 8
+20/12/27 09:03:53 INFO SparkHadoopUtil: Updating delegation tokens for current user.
+20/12/27 09:03:54 DEBUG SparkHadoopUtil: Adding/updating delegation tokens List(Kind: HDFS_DELEGATION_TOKEN, Service: 10.200.0.57:9000, Ident: (HDFS_DELEGATION_TOKEN token 35 for hdfs); HDFS_DELEGATION_TOKEN token 35 for hdfs; Renewer: hdfs; Issued: 12/27/20 9:03 AM; Max Date: 1/3/21 9:03 AM)
+20/12/27 09:03:54 INFO SecurityManager: Changing view acls to: 1000,hdfs
+20/12/27 09:03:54 INFO SecurityManager: Changing modify acls to: 1000,hdfs
+20/12/27 09:03:54 INFO SecurityManager: Changing view acls groups to: 
+20/12/27 09:03:54 INFO SecurityManager: Changing modify acls groups to: 
+20/12/27 09:03:54 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users  with view permissions: Set(1000, hdfs); groups with view permissions: Set(); users  with modify permissions: Set(1000, hdfs); groups with modify permissions: Set()
+20/12/27 09:03:54 DEBUG SparkEnv: Using serializer: class org.apache.spark.serializer.JavaSerializer
+20/12/27 09:03:54 DEBUG TransportClientFactory: Creating new connection to /10.200.0.60:34007
+20/12/27 09:03:54 DEBUG TransportClientFactory: Connection to /10.200.0.60:34007 successful, running bootstraps...
+20/12/27 09:03:54 INFO TransportClientFactory: Successfully created connection to /10.200.0.60:34007 after 1 ms (0 ms spent in bootstraps)
+20/12/27 09:03:54 INFO DiskBlockManager: Created local directory at /var/data/spark-dc7544c2-d9fe-4eba-9cc9-fd10a57c73da/blockmgr-51438fa1-8220-4f68-ad93-a03533aae2fd
+20/12/27 09:03:54 DEBUG DiskBlockManager: Adding shutdown hook
+20/12/27 09:03:54 DEBUG ShutdownHookManager: Adding shutdown hook
+20/12/27 09:03:54 INFO MemoryStore: MemoryStore started with capacity 997.8 MiB
+20/12/27 09:03:54 INFO CoarseGrainedExecutorBackend: Connecting to driver: spark://CoarseGrainedScheduler@10.200.0.60:34007
+20/12/27 09:03:54 DEBUG CoarseGrainedExecutorBackend: Resource profile id is: 0
+20/12/27 09:03:54 INFO ResourceUtils: ==============================================================
+20/12/27 09:03:54 INFO ResourceUtils: Resources for spark.executor:
+
+20/12/27 09:03:54 INFO ResourceUtils: ==============================================================
+20/12/27 09:03:55 INFO CoarseGrainedExecutorBackend: Successfully registered with driver
+20/12/27 09:03:55 INFO Executor: Starting executor ID 1 on host 10.200.0.56
+20/12/27 09:03:55 DEBUG TransportServer: Shuffle server started on port: 38925
+20/12/27 09:03:55 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 38925.
+20/12/27 09:03:55 INFO NettyBlockTransferService: Server created on 10.200.0.56:38925
+20/12/27 09:03:55 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+20/12/27 09:03:55 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(1, 10.200.0.56, 38925, None)
+20/12/27 09:03:55 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(1, 10.200.0.56, 38925, None)
+20/12/27 09:03:55 INFO BlockManager: Initialized BlockManager: BlockManagerId(1, 10.200.0.56, 38925, None)
+20/12/27 09:04:07 DEBUG BlockManagerSlaveEndpoint: removing broadcast 2
+20/12/27 09:04:07 DEBUG BlockManager: Removing broadcast 2
+20/12/27 09:04:07 DEBUG BlockManagerSlaveEndpoint: Done removing broadcast 2, response is 0
+20/12/27 09:04:07 DEBUG BlockManagerSlaveEndpoint: Sent response: 0 to 10.200.0.60:34007
+20/12/27 09:04:07 DEBUG BlockManagerSlaveEndpoint: removing broadcast 0
+20/12/27 09:04:07 DEBUG BlockManager: Removing broadcast 0
+20/12/27 09:04:07 DEBUG BlockManagerSlaveEndpoint: Done removing broadcast 0, response is 0
+20/12/27 09:04:07 DEBUG BlockManagerSlaveEndpoint: Sent response: 0 to 10.200.0.60:34007
+20/12/27 09:04:07 DEBUG BlockManagerSlaveEndpoint: removing broadcast 1
+20/12/27 09:04:07 DEBUG BlockManager: Removing broadcast 1
+20/12/27 09:04:07 DEBUG BlockManagerSlaveEndpoint: Done removing broadcast 1, response is 0
+20/12/27 09:04:07 DEBUG BlockManagerSlaveEndpoint: Sent response: 0 to 10.200.0.60:34007
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: removing broadcast 6
+20/12/27 09:04:30 DEBUG BlockManager: Removing broadcast 6
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: Done removing broadcast 6, response is 0
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: Sent response: 0 to 10.200.0.60:34007
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: removing broadcast 5
+20/12/27 09:04:30 DEBUG BlockManager: Removing broadcast 5
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: Done removing broadcast 5, response is 0
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: Sent response: 0 to 10.200.0.60:34007
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: removing broadcast 7
+20/12/27 09:04:30 DEBUG BlockManager: Removing broadcast 7
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: Done removing broadcast 7, response is 0
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: Sent response: 0 to 10.200.0.60:34007
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: removing broadcast 4
+20/12/27 09:04:30 DEBUG BlockManager: Removing broadcast 4
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: Done removing broadcast 4, response is 0
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: Sent response: 0 to 10.200.0.60:34007
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: removing broadcast 3
+20/12/27 09:04:30 DEBUG BlockManager: Removing broadcast 3
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: Done removing broadcast 3, response is 0
+20/12/27 09:04:30 DEBUG BlockManagerSlaveEndpoint: Sent response: 0 to 10.200.0.60:34007
+20/12/27 09:04:30 INFO CoarseGrainedExecutorBackend: Got assigned task 4
+20/12/27 09:04:30 INFO Executor: Running task 0.0 in stage 4.0 (TID 4)
+20/12/27 09:04:30 INFO Executor: Fetching spark://10.200.0.60:34007/files/v3io-pyspark.zip with timestamp 1609059824589
+20/12/27 09:04:30 DEBUG TransportClientFactory: Creating new connection to /10.200.0.60:34007
+20/12/27 09:04:30 DEBUG TransportClientFactory: Connection to /10.200.0.60:34007 successful, running bootstraps...
+20/12/27 09:04:30 INFO TransportClientFactory: Successfully created connection to /10.200.0.60:34007 after 2 ms (0 ms spent in bootstraps)
+20/12/27 09:04:30 DEBUG TransportClient: Sending stream request for /files/v3io-pyspark.zip to /10.200.0.60:34007
+20/12/27 09:04:30 INFO Utils: Fetching spark://10.200.0.60:34007/files/v3io-pyspark.zip to /var/data/spark-dc7544c2-d9fe-4eba-9cc9-fd10a57c73da/spark-3007e7ab-24da-4b73-a438-178a4d232c72/fetchFileTemp5799112251348732254.tmp
+20/12/27 09:04:30 INFO Utils: Copying /var/data/spark-dc7544c2-d9fe-4eba-9cc9-fd10a57c73da/spark-3007e7ab-24da-4b73-a438-178a4d232c72/-7930571181609059824589_cache to /opt/spark/work-dir/./v3io-pyspark.zip
+20/12/27 09:04:30 INFO Executor: Fetching spark://10.200.0.60:34007/jars/v3io-spark3-object-dataframe_2.12.jar with timestamp 1609059824588
+20/12/27 09:04:30 DEBUG TransportClient: Sending stream request for /jars/v3io-spark3-object-dataframe_2.12.jar to /10.200.0.60:34007
+20/12/27 09:04:30 INFO Utils: Fetching spark://10.200.0.60:34007/jars/v3io-spark3-object-dataframe_2.12.jar to /var/data/spark-dc7544c2-d9fe-4eba-9cc9-fd10a57c73da/spark-3007e7ab-24da-4b73-a438-178a4d232c72/fetchFileTemp1351321688576072491.tmp
+20/12/27 09:04:30 INFO Utils: Copying /var/data/spark-dc7544c2-d9fe-4eba-9cc9-fd10a57c73da/spark-3007e7ab-24da-4b73-a438-178a4d232c72/-19416779871609059824588_cache to /opt/spark/work-dir/./v3io-spark3-object-dataframe_2.12.jar
+20/12/27 09:04:30 INFO Executor: Adding file:/opt/spark/work-dir/./v3io-spark3-object-dataframe_2.12.jar to class loader
+20/12/27 09:04:30 INFO Executor: Fetching spark://10.200.0.60:34007/jars/v3io-spark3-streaming_2.12.jar with timestamp 1609059824588
+20/12/27 09:04:30 DEBUG TransportClient: Sending stream request for /jars/v3io-spark3-streaming_2.12.jar to /10.200.0.60:34007
+20/12/27 09:04:30 INFO Utils: Fetching spark://10.200.0.60:34007/jars/v3io-spark3-streaming_2.12.jar to /var/data/spark-dc7544c2-d9fe-4eba-9cc9-fd10a57c73da/spark-3007e7ab-24da-4b73-a438-178a4d232c72/fetchFileTemp4068482976549436484.tmp
+20/12/27 09:04:30 INFO Utils: Copying /var/data/spark-dc7544c2-d9fe-4eba-9cc9-fd10a57c73da/spark-3007e7ab-24da-4b73-a438-178a4d232c72/7973972781609059824588_cache to /opt/spark/work-dir/./v3io-spark3-streaming_2.12.jar
+20/12/27 09:04:30 INFO Executor: Adding file:/opt/spark/work-dir/./v3io-spark3-streaming_2.12.jar to class loader
+20/12/27 09:04:30 INFO Executor: Fetching spark://10.200.0.60:34007/jars/v3io-hcfs_2.12.jar with timestamp 1609059824588
+20/12/27 09:04:30 DEBUG TransportClient: Sending stream request for /jars/v3io-hcfs_2.12.jar to /10.200.0.60:34007
+20/12/27 09:04:30 INFO Utils: Fetching spark://10.200.0.60:34007/jars/v3io-hcfs_2.12.jar to /var/data/spark-dc7544c2-d9fe-4eba-9cc9-fd10a57c73da/spark-3007e7ab-24da-4b73-a438-178a4d232c72/fetchFileTemp8719973325493476094.tmp
+20/12/27 09:04:30 INFO Utils: Copying /var/data/spark-dc7544c2-d9fe-4eba-9cc9-fd10a57c73da/spark-3007e7ab-24da-4b73-a438-178a4d232c72/-17210800631609059824588_cache to /opt/spark/work-dir/./v3io-hcfs_2.12.jar
+20/12/27 09:04:30 INFO Executor: Adding file:/opt/spark/work-dir/./v3io-hcfs_2.12.jar to class loader
+20/12/27 09:04:30 DEBUG Executor: Task 4's epoch is 0
+20/12/27 09:04:30 DEBUG ExecutorMetricsPoller: stageTCMP: (4, 0) -> 1
+20/12/27 09:04:30 DEBUG BlockManager: Getting local block broadcast_9
+20/12/27 09:04:30 DEBUG BlockManager: Block broadcast_9 was not found
+20/12/27 09:04:30 INFO TorrentBroadcast: Started reading broadcast variable 9 with 1 pieces (estimated total size 4.0 MiB)
+20/12/27 09:04:30 DEBUG TorrentBroadcast: Reading piece broadcast_9_piece0 of broadcast_9
+20/12/27 09:04:30 DEBUG BlockManager: Getting local block broadcast_9_piece0 as bytes
+20/12/27 09:04:30 DEBUG BlockManager: Getting remote block broadcast_9_piece0
+20/12/27 09:04:30 DEBUG BlockManager: Getting remote block broadcast_9_piece0 from BlockManagerId(driver, 10.200.0.60, 46698, None)
+20/12/27 09:04:30 DEBUG TransportClientFactory: Creating new connection to /10.200.0.60:46698
+20/12/27 09:04:30 DEBUG TransportClientFactory: Connection to /10.200.0.60:46698 successful, running bootstraps...
+20/12/27 09:04:30 INFO TransportClientFactory: Successfully created connection to /10.200.0.60:46698 after 2 ms (0 ms spent in bootstraps)
+20/12/27 09:04:30 DEBUG TransportClient: Sending fetch chunk request 0 to /10.200.0.60:46698
+20/12/27 09:04:30 INFO MemoryStore: Block broadcast_9_piece0 stored as bytes in memory (estimated size 6.1 KiB, free 997.8 MiB)
+20/12/27 09:04:30 DEBUG BlockManagerMaster: Updated info of block broadcast_9_piece0
+20/12/27 09:04:30 DEBUG BlockManager: Told master about block broadcast_9_piece0
+20/12/27 09:04:30 DEBUG BlockManager: Put block broadcast_9_piece0 locally took 10 ms
+20/12/27 09:04:30 DEBUG BlockManager: Putting block broadcast_9_piece0 without replication took 12 ms
+20/12/27 09:04:30 INFO TorrentBroadcast: Reading broadcast variable 9 took 135 ms
+20/12/27 09:04:30 INFO MemoryStore: Block broadcast_9 stored as values in memory (estimated size 18.6 KiB, free 997.8 MiB)
+20/12/27 09:04:30 DEBUG BlockManager: Put block broadcast_9 locally took 96 ms
+20/12/27 09:04:30 DEBUG BlockManager: Putting block broadcast_9 without replication took 96 ms
+20/12/27 09:04:31 DEBUG CodeGenerator: 
+/* 001 */ public Object generate(Object[] references) {
+/* 002 */   return new GeneratedIteratorForCodegenStage1(references);
+/* 003 */ }
+/* 004 */
+/* 005 */ // codegenStageId=1
+/* 006 */ final class GeneratedIteratorForCodegenStage1 extends org.apache.spark.sql.execution.BufferedRowIterator {
+/* 007 */   private Object[] references;
+/* 008 */   private scala.collection.Iterator[] inputs;
+/* 009 */   private int columnartorow_batchIdx_0;
+/* 010 */   private org.apache.spark.sql.execution.vectorized.OnHeapColumnVector[] columnartorow_mutableStateArray_2 = new org.apache.spark.sql.execution.vectorized.OnHeapColumnVector[13];
+/* 011 */   private org.apache.spark.sql.catalyst.expressions.codegen.UnsafeRowWriter[] columnartorow_mutableStateArray_3 = new org.apache.spark.sql.catalyst.expressions.codegen.UnsafeRowWriter[1];
+/* 012 */   private org.apache.spark.sql.vectorized.ColumnarBatch[] columnartorow_mutableStateArray_1 = new org.apache.spark.sql.vectorized.ColumnarBatch[1];
+/* 013 */   private scala.collection.Iterator[] columnartorow_mutableStateArray_0 = new scala.collection.Iterator[1];
+/* 014 */
+/* 015 */   public GeneratedIteratorForCodegenStage1(Object[] references) {
+/* 016 */     this.references = references;
+/* 017 */   }
+/* 018 */
+/* 019 */   public void init(int index, scala.collection.Iterator[] inputs) {
+/* 020 */     partitionIndex = index;
+/* 021 */     this.inputs = inputs;
+/* 022 */     columnartorow_mutableStateArray_0[0] = inputs[0];
+/* 023 */
+/* 024 */     columnartorow_mutableStateArray_3[0] = new org.apache.spark.sql.catalyst.expressions.codegen.UnsafeRowWriter(13, 416);
+/* 025 */
+/* 026 */   }
+/* 027 */
+/* 028 */   private void columnartorow_nextBatch_0() throws java.io.IOException {
+/* 029 */     if (columnartorow_mutableStateArray_0[0].hasNext()) {
+/* 030 */       columnartorow_mutableStateArray_1[0] = (org.apache.spark.sql.vectorized.ColumnarBatch)columnartorow_mutableStateArray_0[0].next();
+/* 031 */       ((org.apache.spark.sql.execution.metric.SQLMetric) references[1] /* numInputBatches */).add(1);
+/* 032 */       ((org.apache.spark.sql.execution.metric.SQLMetric) references[0] /* numOutputRows */).add(columnartorow_mutableStateArray_1[0].numRows());
+/* 033 */       columnartorow_batchIdx_0 = 0;
+/* 034 */       columnartorow_mutableStateArray_2[0] = (org.apache.spark.sql.execution.vectorized.OnHeapColumnVector) columnartorow_mutableStateArray_1[0].column(0);
+/* 035 */       columnartorow_mutableStateArray_2[1] = (org.apache.spark.sql.execution.vectorized.OnHeapColumnVector) columnartorow_mutableStateArray_1[0].column(1);
+/* 036 */       columnartorow_mutableStateArray_2[2] = (org.apache.spark.sql.execution.vectorized.OnHeapColumnVector) columnartorow_mutableStateArray_1[0].column(2);
+/* 037 */       columnartorow_mutableStateArray_2[3] = (org.apache.spark.sql.execution.vectorized.OnHeapColumnVector) columnartorow_mutableStateArray_1[0].column(3);
+/* 038 */       columnartorow_mutableStateArray_2[4] = (org.apache.spark.sql.execution.vectorized.OnHeapColumnVector) columnartorow_mutableStateArray_1[0].column(4);
+/* 039 */       columnartorow_mutableStateArray_2[5] = (org.apache.spark.sql.execution.vectorized.OnHeapColumnVector) columnartorow_mutableStateArray_1[0].column(5);
+/* 040 */       columnartorow_mutableStateArray_2[6] = (org.apache.spark.sql.execution.vectorized.OnHeapColumnVector) columnartorow_mutableStateArray_1[0].column(6);
+/* 041 */       columnartorow_mutableStateArray_2[7] = (org.apache.spark.sql.execution.vectorized.OnHeapColumnVector) columnartorow_mutableStateArray_1[0].column(7);
+/* 042 */       columnartorow_mutableStateArray_2[8] = (org.apache.spark.sql.execution.vectorized.OnHeapColumnVector) columnartorow_mutableStateArray_1[0].column(8);
+/* 043 */       columnartorow_mutableStateArray_2[9] = (org.apache.spark.sql.execution.vectorized.OnHeapColumnVector) columnartorow_mutableStateArray_1[0].column(9);
+/* 044 */       columnartorow_mutableStateArray_2[10] = (org.apache.spark.sql.execution.vectorized.OnHeapColumnVector) columnartorow_mutableStateArray_1[0].column(10);
+/* 045 */       columnartorow_mutableStateArray_2[11] = (org.apache.spark.sql.execution.vectorized.OnHeapColumnVector) columnartorow_mutableStateArray_1[0].column(11);
+/* 046 */       columnartorow_mutableStateArray_2[12] = (org.apache.spark.sql.execution.vectorized.OnHeapColumnVector) columnartorow_mutableStateArray_1[0].column(12);
+/* 047 */
+/* 048 */     }
+/* 049 */   }
+/* 050 */
+/* 051 */   protected void processNext() throws java.io.IOException {
+/* 052 */     if (columnartorow_mutableStateArray_1[0] == null) {
+/* 053 */       columnartorow_nextBatch_0();
+/* 054 */     }
+/* 055 */     while ( columnartorow_mutableStateArray_1[0] != null) {
+/* 056 */       int columnartorow_numRows_0 = columnartorow_mutableStateArray_1[0].numRows();
+/* 057 */       int columnartorow_localEnd_0 = columnartorow_numRows_0 - columnartorow_batchIdx_0;
+/* 058 */       for (int columnartorow_localIdx_0 = 0; columnartorow_localIdx_0 < columnartorow_localEnd_0; columnartorow_localIdx_0++) {
+/* 059 */         int columnartorow_rowIdx_0 = columnartorow_batchIdx_0 + columnartorow_localIdx_0;
+/* 060 */         boolean columnartorow_isNull_0 = columnartorow_mutableStateArray_2[0].isNullAt(columnartorow_rowIdx_0);
+/* 061 */         UTF8String columnartorow_value_0 = columnartorow_isNull_0 ? null : (columnartorow_mutableStateArray_2[0].getUTF8String(columnartorow_rowIdx_0));
+/* 062 */         boolean columnartorow_isNull_1 = columnartorow_mutableStateArray_2[1].isNullAt(columnartorow_rowIdx_0);
+/* 063 */         UTF8String columnartorow_value_1 = columnartorow_isNull_1 ? null : (columnartorow_mutableStateArray_2[1].getUTF8String(columnartorow_rowIdx_0));
+/* 064 */         boolean columnartorow_isNull_2 = columnartorow_mutableStateArray_2[2].isNullAt(columnartorow_rowIdx_0);
+/* 065 */         UTF8String columnartorow_value_2 = columnartorow_isNull_2 ? null : (columnartorow_mutableStateArray_2[2].getUTF8String(columnartorow_rowIdx_0));
+/* 066 */         boolean columnartorow_isNull_3 = columnartorow_mutableStateArray_2[3].isNullAt(columnartorow_rowIdx_0);
+/* 067 */         UTF8String columnartorow_value_3 = columnartorow_isNull_3 ? null : (columnartorow_mutableStateArray_2[3].getUTF8String(columnartorow_rowIdx_0));
+/* 068 */         boolean columnartorow_isNull_4 = columnartorow_mutableStateArray_2[4].isNullAt(columnartorow_rowIdx_0);
+/* 069 */         UTF8String columnartorow_value_4 = columnartorow_isNull_4 ? null : (columnartorow_mutableStateArray_2[4].getUTF8String(columnartorow_rowIdx_0));
+/* 070 */         boolean columnartorow_isNull_5 = columnartorow_mutableStateArray_2[5].isNullAt(columnartorow_rowIdx_0);
+/* 071 */         UTF8String columnartorow_value_5 = columnartorow_isNull_5 ? null : (columnartorow_mutableStateArray_2[5].getUTF8String(columnartorow_rowIdx_0));
+/* 072 */         boolean columnartorow_isNull_6 = columnartorow_mutableStateArray_2[6].isNullAt(columnartorow_rowIdx_0);
+/* 073 */         UTF8String columnartorow_value_6 = columnartorow_isNull_6 ? null : (columnartorow_mutableStateArray_2[6].getUTF8String(columnartorow_rowIdx_0));
+/* 074 */         boolean columnartorow_isNull_7 = columnartorow_mutableStateArray_2[7].isNullAt(columnartorow_rowIdx_0);
+/* 075 */         UTF8String columnartorow_value_7 = columnartorow_isNull_7 ? null : (columnartorow_mutableStateArray_2[7].getUTF8String(columnartorow_rowIdx_0));
+/* 076 */         boolean columnartorow_isNull_8 = columnartorow_mutableStateArray_2[8].isNullAt(columnartorow_rowIdx_0);
+/* 077 */         UTF8String columnartorow_value_8 = columnartorow_isNull_8 ? null : (columnartorow_mutableStateArray_2[8].getUTF8String(columnartorow_rowIdx_0));
+/* 078 */         boolean columnartorow_isNull_9 = columnartorow_mutableStateArray_2[9].isNullAt(columnartorow_rowIdx_0);
+/* 079 */         UTF8String columnartorow_value_9 = columnartorow_isNull_9 ? null : (columnartorow_mutableStateArray_2[9].getUTF8String(columnartorow_rowIdx_0));
+/* 080 */         boolean columnartorow_isNull_10 = columnartorow_mutableStateArray_2[10].isNullAt(columnartorow_rowIdx_0);
+/* 081 */         UTF8String columnartorow_value_10 = columnartorow_isNull_10 ? null : (columnartorow_mutableStateArray_2[10].getUTF8String(columnartorow_rowIdx_0));
+/* 082 */         boolean columnartorow_isNull_11 = columnartorow_mutableStateArray_2[11].isNullAt(columnartorow_rowIdx_0);
+/* 083 */         UTF8String columnartorow_value_11 = columnartorow_isNull_11 ? null : (columnartorow_mutableStateArray_2[11].getUTF8String(columnartorow_rowIdx_0));
+/* 084 */         boolean columnartorow_isNull_12 = columnartorow_mutableStateArray_2[12].isNullAt(columnartorow_rowIdx_0);
+/* 085 */         UTF8String columnartorow_value_12 = columnartorow_isNull_12 ? null : (columnartorow_mutableStateArray_2[12].getUTF8String(columnartorow_rowIdx_0));
+/* 086 */         columnartorow_mutableStateArray_3[0].reset();
+/* 087 */
+/* 088 */         columnartorow_mutableStateArray_3[0].zeroOutNullBytes();
+/* 089 */
+/* 090 */         if (columnartorow_isNull_0) {
+/* 091 */           columnartorow_mutableStateArray_3[0].setNullAt(0);
+/* 092 */         } else {
+/* 093 */           columnartorow_mutableStateArray_3[0].write(0, columnartorow_value_0);
+/* 094 */         }
+/* 095 */
+/* 096 */         if (columnartorow_isNull_1) {
+/* 097 */           columnartorow_mutableStateArray_3[0].setNullAt(1);
+/* 098 */         } else {
+/* 099 */           columnartorow_mutableStateArray_3[0].write(1, columnartorow_value_1);
+/* 100 */         }
+/* 101 */
+/* 102 */         if (columnartorow_isNull_2) {
+/* 103 */           columnartorow_mutableStateArray_3[0].setNullAt(2);
+/* 104 */         } else {
+/* 105 */           columnartorow_mutableStateArray_3[0].write(2, columnartorow_value_2);
+/* 106 */         }
+/* 107 */
+/* 108 */         if (columnartorow_isNull_3) {
+/* 109 */           columnartorow_mutableStateArray_3[0].setNullAt(3);
+/* 110 */         } else {
+/* 111 */           columnartorow_mutableStateArray_3[0].write(3, columnartorow_value_3);
+/* 112 */         }
+/* 113 */
+/* 114 */         if (columnartorow_isNull_4) {
+/* 115 */           columnartorow_mutableStateArray_3[0].setNullAt(4);
+/* 116 */         } else {
+/* 117 */           columnartorow_mutableStateArray_3[0].write(4, columnartorow_value_4);
+/* 118 */         }
+/* 119 */
+/* 120 */         if (columnartorow_isNull_5) {
+/* 121 */           columnartorow_mutableStateArray_3[0].setNullAt(5);
+/* 122 */         } else {
+/* 123 */           columnartorow_mutableStateArray_3[0].write(5, columnartorow_value_5);
+/* 124 */         }
+/* 125 */
+/* 126 */         if (columnartorow_isNull_6) {
+/* 127 */           columnartorow_mutableStateArray_3[0].setNullAt(6);
+/* 128 */         } else {
+/* 129 */           columnartorow_mutableStateArray_3[0].write(6, columnartorow_value_6);
+/* 130 */         }
+/* 131 */
+/* 132 */         if (columnartorow_isNull_7) {
+/* 133 */           columnartorow_mutableStateArray_3[0].setNullAt(7);
+/* 134 */         } else {
+/* 135 */           columnartorow_mutableStateArray_3[0].write(7, columnartorow_value_7);
+/* 136 */         }
+/* 137 */
+/* 138 */         if (columnartorow_isNull_8) {
+/* 139 */           columnartorow_mutableStateArray_3[0].setNullAt(8);
+/* 140 */         } else {
+/* 141 */           columnartorow_mutableStateArray_3[0].write(8, columnartorow_value_8);
+/* 142 */         }
+/* 143 */
+/* 144 */         if (columnartorow_isNull_9) {
+/* 145 */           columnartorow_mutableStateArray_3[0].setNullAt(9);
+/* 146 */         } else {
+/* 147 */           columnartorow_mutableStateArray_3[0].write(9, columnartorow_value_9);
+/* 148 */         }
+/* 149 */
+/* 150 */         if (columnartorow_isNull_10) {
+/* 151 */           columnartorow_mutableStateArray_3[0].setNullAt(10);
+/* 152 */         } else {
+/* 153 */           columnartorow_mutableStateArray_3[0].write(10, columnartorow_value_10);
+/* 154 */         }
+/* 155 */
+/* 156 */         if (columnartorow_isNull_11) {
+/* 157 */           columnartorow_mutableStateArray_3[0].setNullAt(11);
+/* 158 */         } else {
+/* 159 */           columnartorow_mutableStateArray_3[0].write(11, columnartorow_value_11);
+/* 160 */         }
+/* 161 */
+/* 162 */         if (columnartorow_isNull_12) {
+/* 163 */           columnartorow_mutableStateArray_3[0].setNullAt(12);
+/* 164 */         } else {
+/* 165 */           columnartorow_mutableStateArray_3[0].write(12, columnartorow_value_12);
+/* 166 */         }
+/* 167 */         append((columnartorow_mutableStateArray_3[0].getRow()));
+/* 168 */         if (shouldStop()) { columnartorow_batchIdx_0 = columnartorow_rowIdx_0 + 1; return; }
+/* 169 */       }
+/* 170 */       columnartorow_batchIdx_0 = columnartorow_numRows_0;
+/* 171 */       columnartorow_mutableStateArray_1[0] = null;
+/* 172 */       columnartorow_nextBatch_0();
+/* 173 */     }
+/* 174 */   }
+/* 175 */
+/* 176 */ }
+
+20/12/27 09:04:31 INFO CodeGenerator: Code generated in 464.376403 ms
+20/12/27 09:04:31 INFO FileScanRDD: Reading File path: hdfs://hadoop-master.hadoop-domain.default-tenant.svc.cluster.local:9000/output.parquet/part-00000-8c9080d6-4092-40b0-9326-7e34b34fb963-c000.snappy.parquet, range: 0-46233, partition values: [empty row]
+20/12/27 09:04:31 DEBUG BlockManager: Getting local block broadcast_8
+20/12/27 09:04:31 DEBUG BlockManager: Block broadcast_8 was not found
+20/12/27 09:04:31 INFO TorrentBroadcast: Started reading broadcast variable 8 with 1 pieces (estimated total size 4.0 MiB)
+20/12/27 09:04:31 DEBUG TorrentBroadcast: Reading piece broadcast_8_piece0 of broadcast_8
+20/12/27 09:04:31 DEBUG BlockManager: Getting local block broadcast_8_piece0 as bytes
+20/12/27 09:04:31 DEBUG BlockManager: Getting remote block broadcast_8_piece0
+20/12/27 09:04:31 DEBUG BlockManager: Getting remote block broadcast_8_piece0 from BlockManagerId(driver, 10.200.0.60, 46698, None)
+20/12/27 09:04:31 DEBUG TransportClient: Sending fetch chunk request 0 to /10.200.0.60:46698
+20/12/27 09:04:31 INFO MemoryStore: Block broadcast_8_piece0 stored as bytes in memory (estimated size 26.5 KiB, free 997.7 MiB)
+20/12/27 09:04:31 DEBUG BlockManagerMaster: Updated info of block broadcast_8_piece0
+20/12/27 09:04:31 DEBUG BlockManager: Told master about block broadcast_8_piece0
+20/12/27 09:04:31 DEBUG BlockManager: Put block broadcast_8_piece0 locally took 3 ms
+20/12/27 09:04:31 DEBUG BlockManager: Putting block broadcast_8_piece0 without replication took 3 ms
+20/12/27 09:04:31 INFO TorrentBroadcast: Reading broadcast variable 8 took 9 ms
+20/12/27 09:04:32 INFO MemoryStore: Block broadcast_8 stored as values in memory (estimated size 396.4 KiB, free 997.4 MiB)
+20/12/27 09:04:32 DEBUG BlockManager: Put block broadcast_8 locally took 68 ms
+20/12/27 09:04:32 DEBUG BlockManager: Putting block broadcast_8 without replication took 68 ms
+20/12/27 09:04:32 DEBUG BlockReaderLocal: dfs.client.use.legacy.blockreader.local = false
+20/12/27 09:04:32 DEBUG BlockReaderLocal: dfs.client.read.shortcircuit = false
+20/12/27 09:04:32 DEBUG BlockReaderLocal: dfs.client.domain.socket.data.traffic = false
+20/12/27 09:04:32 DEBUG BlockReaderLocal: dfs.domain.socket.path = 
+20/12/27 09:04:32 DEBUG RetryUtils: multipleLinearRandomRetry = null
+20/12/27 09:04:32 DEBUG Server: rpcKind=RPC_PROTOCOL_BUFFER, rpcRequestWrapperClass=class org.apache.hadoop.ipc.ProtobufRpcEngine$RpcRequestWrapper, rpcInvoker=org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker@2a42c4dd
+20/12/27 09:04:32 DEBUG Client: getting client out of cache: org.apache.hadoop.ipc.Client@2ae35206
+20/12/27 09:04:33 DEBUG PerformanceAdvisory: Both short-circuit local reads and UNIX domain socket are disabled.
+20/12/27 09:04:33 DEBUG DataTransferSaslUtil: DataTransferProtocol using SaslPropertiesResolver, configured QOP dfs.data.transfer.protection = authentication, configured class dfs.data.transfer.saslproperties.resolver.class = class org.apache.hadoop.security.SaslPropertiesResolver
+20/12/27 09:04:33 DEBUG Client: The ping interval is 60000 ms.
+20/12/27 09:04:33 DEBUG Client: Connecting to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000
+20/12/27 09:04:33 DEBUG UserGroupInformation: PrivilegedAction as:hdfs (auth:SIMPLE) from:org.apache.hadoop.ipc.Client$Connection.setupIOstreams(Client.java:726)
+20/12/27 09:04:33 DEBUG SaslRpcClient: Sending sasl message state: NEGOTIATE
+
+20/12/27 09:04:33 DEBUG SaslRpcClient: Received SASL message state: NEGOTIATE
+auths {
+  method: "TOKEN"
+  mechanism: "DIGEST-MD5"
+  protocol: ""
+  serverId: "default"
+  challenge: "realm=\"default\",nonce=\"KvAV8esiNhXYaS3P0chm8R8Litt7F64T7W9I2RpT\",qop=\"auth\",charset=utf-8,algorithm=md5-sess"
+}
+auths {
+  method: "KERBEROS"
+  mechanism: "GSSAPI"
+  protocol: "hdfs"
+  serverId: "hadoop-master.hadoop-domain.default-tenant.svc.cluster.local"
+}
+
+20/12/27 09:04:33 DEBUG SaslRpcClient: Get token info proto:interface org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolPB info:@org.apache.hadoop.security.token.TokenInfo(value=class org.apache.hadoop.hdfs.security.token.delegation.DelegationTokenSelector)
+20/12/27 09:04:33 DEBUG SaslRpcClient: Creating SASL DIGEST-MD5(TOKEN)  client to authenticate to service at default
+20/12/27 09:04:33 DEBUG SaslRpcClient: Use TOKEN authentication for protocol ClientNamenodeProtocolPB
+20/12/27 09:04:33 DEBUG SaslRpcClient: SASL client callback: setting username: AE1oZGZzL2hhZG9vcC1tYXN0ZXIuaGFkb29wLWRvbWFpbi5kZWZhdWx0LXRlbmFudC5zdmMuY2x1c3Rlci5sb2NhbEBFWEFNUExFLkNPTQRoZGZzAIoBdqNwegOKAXbHfP4DIwY=
+20/12/27 09:04:33 DEBUG SaslRpcClient: SASL client callback: setting userPassword
+20/12/27 09:04:33 DEBUG SaslRpcClient: SASL client callback: setting realm: default
+20/12/27 09:04:33 DEBUG SaslRpcClient: Sending sasl message state: INITIATE
+token: "charset=utf-8,username=\"AE1oZGZzL2hhZG9vcC1tYXN0ZXIuaGFkb29wLWRvbWFpbi5kZWZhdWx0LXRlbmFudC5zdmMuY2x1c3Rlci5sb2NhbEBFWEFNUExFLkNPTQRoZGZzAIoBdqNwegOKAXbHfP4DIwY=\",realm=\"default\",nonce=\"KvAV8esiNhXYaS3P0chm8R8Litt7F64T7W9I2RpT\",nc=00000001,cnonce=\"i/n/tFnMJU4VLyeBQuoOzq6Y+8hbnAySSun6Y41S\",digest-uri=\"/default\",maxbuf=65536,response=be8c5d6e2fec778706de09f7d55b67ee,qop=auth"
+auths {
+  method: "TOKEN"
+  mechanism: "DIGEST-MD5"
+  protocol: ""
+  serverId: "default"
+}
+
+20/12/27 09:04:33 DEBUG SaslRpcClient: Received SASL message state: SUCCESS
+token: "rspauth=ac70a94e21f2a36363468c72c899165c"
+
+20/12/27 09:04:33 DEBUG Client: Negotiated QOP is :auth
+20/12/27 09:04:33 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs: starting, having connections 1
+20/12/27 09:04:33 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs sending #0
+20/12/27 09:04:33 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs got value #0
+20/12/27 09:04:33 DEBUG ProtobufRpcEngine: Call: getFileInfo took 312ms
+20/12/27 09:04:33 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs sending #1
+20/12/27 09:04:33 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs got value #1
+20/12/27 09:04:33 DEBUG ProtobufRpcEngine: Call: getBlockLocations took 1ms
+20/12/27 09:04:33 DEBUG DFSClient: newInfo = LocatedBlocks{
+  fileLength=46233
+  underConstruction=false
+  blocks=[LocatedBlock{BP-410685943-10.200.0.57-1608646021336:blk_1073741832_1008; getBlockSize()=46233; corrupt=false; offset=0; locs=[DatanodeInfoWithStorage[10.200.0.58:30004,DS-dd25136c-124d-48f9-8776-375f84cb7fbc,DISK]]}]
+  lastLocatedBlock=LocatedBlock{BP-410685943-10.200.0.57-1608646021336:blk_1073741832_1008; getBlockSize()=46233; corrupt=false; offset=0; locs=[DatanodeInfoWithStorage[10.200.0.58:30004,DS-dd25136c-124d-48f9-8776-375f84cb7fbc,DISK]]}
+  isLastBlockComplete=true}
+20/12/27 09:04:33 DEBUG DFSClient: Connecting to datanode 10.200.0.58:30004
+20/12/27 09:04:33 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs sending #2
+20/12/27 09:04:33 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs got value #2
+20/12/27 09:04:33 DEBUG ProtobufRpcEngine: Call: getServerDefaults took 1ms
+20/12/27 09:04:33 DEBUG SaslDataTransferClient: SASL client doing general handshake for addr = /10.200.0.58, datanodeId = DatanodeInfoWithStorage[10.200.0.58:30004,DS-dd25136c-124d-48f9-8776-375f84cb7fbc,DISK]
+20/12/27 09:04:33 DEBUG DataTransferSaslUtil: Verifying QOP, requested QOP = [auth], negotiated QOP = auth
+20/12/27 09:04:33 DEBUG DFSClient: Connecting to datanode 10.200.0.58:30004
+20/12/27 09:04:33 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs sending #3
+20/12/27 09:04:33 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs got value #3
+20/12/27 09:04:33 DEBUG ProtobufRpcEngine: Call: getFileInfo took 1ms
+20/12/27 09:04:33 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs sending #4
+20/12/27 09:04:33 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs got value #4
+20/12/27 09:04:33 DEBUG ProtobufRpcEngine: Call: getBlockLocations took 1ms
+20/12/27 09:04:33 DEBUG DFSClient: newInfo = LocatedBlocks{
+  fileLength=46233
+  underConstruction=false
+  blocks=[LocatedBlock{BP-410685943-10.200.0.57-1608646021336:blk_1073741832_1008; getBlockSize()=46233; corrupt=false; offset=0; locs=[DatanodeInfoWithStorage[10.200.0.58:30004,DS-dd25136c-124d-48f9-8776-375f84cb7fbc,DISK]]}]
+  lastLocatedBlock=LocatedBlock{BP-410685943-10.200.0.57-1608646021336:blk_1073741832_1008; getBlockSize()=46233; corrupt=false; offset=0; locs=[DatanodeInfoWithStorage[10.200.0.58:30004,DS-dd25136c-124d-48f9-8776-375f84cb7fbc,DISK]]}
+  isLastBlockComplete=true}
+20/12/27 09:04:33 DEBUG DFSClient: Connecting to datanode 10.200.0.58:30004
+20/12/27 09:04:33 DEBUG DFSClient: Connecting to datanode 10.200.0.58:30004
+20/12/27 09:04:34 DEBUG ParquetReadSupport: Going to read the following fields from the Parquet file with the following schema:
+Parquet file schema:
+message spark_schema {
+  optional binary _c0 (UTF8);
+  optional binary _c1 (UTF8);
+  optional binary _c2 (UTF8);
+  optional binary _c3 (UTF8);
+  optional binary _c4 (UTF8);
+  optional binary _c5 (UTF8);
+  optional binary _c6 (UTF8);
+  optional binary _c7 (UTF8);
+  optional binary _c8 (UTF8);
+  optional binary _c9 (UTF8);
+  optional binary _c10 (UTF8);
+  optional binary _c11 (UTF8);
+  optional binary _c12 (UTF8);
+}
+
+Parquet clipped schema:
+message spark_schema {
+  optional binary _c0 (UTF8);
+  optional binary _c1 (UTF8);
+  optional binary _c2 (UTF8);
+  optional binary _c3 (UTF8);
+  optional binary _c4 (UTF8);
+  optional binary _c5 (UTF8);
+  optional binary _c6 (UTF8);
+  optional binary _c7 (UTF8);
+  optional binary _c8 (UTF8);
+  optional binary _c9 (UTF8);
+  optional binary _c10 (UTF8);
+  optional binary _c11 (UTF8);
+  optional binary _c12 (UTF8);
+}
+
+Parquet requested schema:
+message spark_schema {
+  optional binary _c0 (UTF8);
+  optional binary _c1 (UTF8);
+  optional binary _c2 (UTF8);
+  optional binary _c3 (UTF8);
+  optional binary _c4 (UTF8);
+  optional binary _c5 (UTF8);
+  optional binary _c6 (UTF8);
+  optional binary _c7 (UTF8);
+  optional binary _c8 (UTF8);
+  optional binary _c9 (UTF8);
+  optional binary _c10 (UTF8);
+  optional binary _c11 (UTF8);
+  optional binary _c12 (UTF8);
+}
+
+Catalyst requested schema:
+root
+-- _c0: string (nullable = true)
+-- _c1: string (nullable = true)
+-- _c2: string (nullable = true)
+-- _c3: string (nullable = true)
+-- _c4: string (nullable = true)
+-- _c5: string (nullable = true)
+-- _c6: string (nullable = true)
+-- _c7: string (nullable = true)
+-- _c8: string (nullable = true)
+-- _c9: string (nullable = true)
+-- _c10: string (nullable = true)
+-- _c11: string (nullable = true)
+-- _c12: string (nullable = true)
+
+       
+20/12/27 09:04:34 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs sending #5
+20/12/27 09:04:34 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs got value #5
+20/12/27 09:04:34 DEBUG ProtobufRpcEngine: Call: getFileInfo took 1ms
+20/12/27 09:04:34 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs sending #6
+20/12/27 09:04:34 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs got value #6
+20/12/27 09:04:34 DEBUG ProtobufRpcEngine: Call: getBlockLocations took 1ms
+20/12/27 09:04:34 DEBUG DFSClient: newInfo = LocatedBlocks{
+  fileLength=46233
+  underConstruction=false
+  blocks=[LocatedBlock{BP-410685943-10.200.0.57-1608646021336:blk_1073741832_1008; getBlockSize()=46233; corrupt=false; offset=0; locs=[DatanodeInfoWithStorage[10.200.0.58:30004,DS-dd25136c-124d-48f9-8776-375f84cb7fbc,DISK]]}]
+  lastLocatedBlock=LocatedBlock{BP-410685943-10.200.0.57-1608646021336:blk_1073741832_1008; getBlockSize()=46233; corrupt=false; offset=0; locs=[DatanodeInfoWithStorage[10.200.0.58:30004,DS-dd25136c-124d-48f9-8776-375f84cb7fbc,DISK]]}
+  isLastBlockComplete=true}
+20/12/27 09:04:34 DEBUG ParquetFileFormat: Appending StructType() [empty row]
+20/12/27 09:04:34 DEBUG DFSClient: Connecting to datanode 10.200.0.58:30004
+20/12/27 09:04:34 INFO CodecPool: Got brand-new decompressor [.snappy]
+20/12/27 09:04:34 INFO Executor: Finished task 0.0 in stage 4.0 (TID 4). 3936 bytes result sent to driver
+20/12/27 09:04:34 DEBUG ExecutorMetricsPoller: removing (4, 0) from stageTCMP
+20/12/27 09:04:44 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs: closed
+20/12/27 09:04:44 DEBUG Client: IPC Client (973156442) connection to hadoop-master.hadoop-domain.default-tenant.svc.cluster.local/10.200.0.57:9000 from hdfs: stopped, remaining connections 0

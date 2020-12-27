@@ -1,0 +1,8 @@
+v3io {
+  client {
+    session {
+      user = "admin"
+      access-key = "7f1e3734-5bf5-4680-9d16-25d19a95aade"
+    }
+  }
+}
