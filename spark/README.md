@@ -38,7 +38,7 @@ For Spark to work properly against a secure HDFS we need the following files ava
 2. HDFS configurations - `core-site.xml` and `hdfs-site.xml`
 3. Executor pod customization template - the executors will need access to `/User` which means that they will need fuse mounted to them. This is no different than any other pod that needs file-system access via fuse. To enable this we need to mount volumes to the pods, and while Spark has some support for that, it does not support `FlexVolume` mounts. Therefore, we need to use a template that adds these configurations to executor pods. For that we have this [yaml file](./worker_pod.yaml) which needs to be accessible to the Jupyter driver
 
-Besides those files, there are also a [notebook file](./spark-k8s.ipynb) that has the Spark code needed to perform HDFS access, and a nice [script](set_spark_env) that creates a `/User/spark` directory on fuse, and populates it with the needed files. Some of these files are retrieved from the `hadoop-worker` pod, so make sure you have it running.
+Besides those files, there are also a [notebook file](./spark-k8s.ipynb) that has the Spark code needed to perform HDFS access, and a nice [script](create_jupyter_env) that creates a `/User/spark` directory on fuse, and populates it with the needed files. Some of these files are retrieved from the `hadoop-worker` pod, so make sure you have it running.
 Once you have configured everything, you can go ahead and run the notebook from Jupyter, and as always - pray. Pray a lot.
 
 > ## BUG: Having to place `krb5.conf` in `/etc`
