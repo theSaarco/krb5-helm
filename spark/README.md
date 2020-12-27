@@ -78,7 +78,6 @@ spark = SparkSession.builder.appName("Example") \
     .config('spark.kerberos.keytab', krb5_keytab_file) \
     .config('spark.kerberos.principal','hdfs/hadoop-master.hadoop-domain.default-tenant.svc.cluster.local@EXAMPLE.COM') \
     .config('spark.kubernetes.kerberos.krb5.path', krb5_config_file) \
-    .config('spark.kerberos.access.hadoopFileSystems', hdfs_fs) \
     .getOrCreate()
 ```
 
@@ -93,6 +92,5 @@ It contains the following configuation parameters:
 7. `'spark.executor.extraJavaOptions'` - I use this to pass the `java.security.krb5.conf` parameter to the executor JVM. This is also passed through the `'spark.kubernetes.kerberos.krb5.path'` parameter, so one of them seems to be redundant. Will need to check which one...
 8. `'spark.executorEnv.HADOOP_CONF_DIR'` - tells the executor where to find the Hadoop configuration. Critical parameter
 9. `'spark.kerberos.keytab'` and `'spark.kerberos.principal'` - these of course are critical so that Spark knows how to authenticate to Kerberos, and enable renewing of the Kerberos tickets once they expire (for long running tasks)
-10. `'spark.kerberos.access.hadoopFileSystems'` - still need to verify whether this is really critical
 
 The notebook also has a small section on some other confgurations which exist and may or not bring any benefit at all.
