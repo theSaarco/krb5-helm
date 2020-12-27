@@ -53,9 +53,9 @@ The [notebook](./spark-k8s.ipynb) contains several sections with critical config
 
 The Spark driver is running on the Jupyter pod in our case, since this is client mode, which is the only mode supported for Python in Spark. The driver has responsiblity for communicating with the HDFS cluster and obtaining delegation tokens to be passed to the executors. This means that the driver needs to be able to authenticate to HDFS using Kerberos. To do that, it needs the "usual suspects" of environment variables:
 
-1. KRB5CCNAME - the location of the Kerberos ticket cache file
-2. HADOOP_CONF_DIR - HDFS configuration. Without this it won't understand it needs to work securely, and who to talk to
-3. KRB5_CONFIG - location of the Kerberos configuration. Note that per the BUG mentioned above, this has no effect for some reason
+1. `KRB5CCNAME` - the location of the Kerberos ticket cache file
+2. `HADOOP_CONF_DIR` - HDFS configuration. Without this it won't understand it needs to work securely, and who to talk to
+3. `KRB5_CONFIG` - location of the Kerberos configuration. Note that per the BUG mentioned above, this has no effect for some reason
 
 The notebook also contains code to run `kinit` to make sure it's authenticated with Kerberos. In the final product the plan is for this to be replaced with a sidecar implementation or something else.
 
