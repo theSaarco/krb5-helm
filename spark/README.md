@@ -61,7 +61,28 @@ The notebook also contains code to run `kinit` to make sure it's authenticated w
 
 ### Spark session configurations
 
-There is a long list of configurations, this section will cover them and what their purpose is.
+This section will explain what's in this big clause:
+
+```bash
+spark = SparkSession.builder.appName("Example") \
+    .master('k8s://https://kubernetes.default.svc:443') \
+    .config('fs.v3io.impl','io.iguaz.v3io.hcfs.V3IOFileSystem') \
+    .config('fs.AbstractFileSystem.v3io.impl','io.iguaz.v3io.hcfs.V3IOAbstractFileSystem') \
+    .config('spark.kubernetes.container.image','spark-exec/spark-py:latest') \
+    .config('spark.kubernetes.driver.pod.name', hostname) \
+    .config('spark.kubernetes.namespace','default-tenant') \
+    .config('spark.pyspark.python','python3.7') \
+    .config('spark.kubernetes.executor.podTemplateFile','/User/spark/worker_pod.yaml') \
+    .config('spark.executor.extraJavaOptions', jvm_config_option) \
+    .config('spark.executorEnv.HADOOP_CONF_DIR', hadoop_conf_dir) \
+    .config('spark.kerberos.keytab', krb5_keytab_file) \
+    .config('spark.kerberos.principal','hdfs/hadoop-master.hadoop-domain.default-tenant.svc.cluster.local@EXAMPLE.COM') \
+    .config('spark.kubernetes.kerberos.krb5.path', krb5_config_file) \
+    .config('spark.kerberos.access.hadoopFileSystems', hdfs_fs) \
+    .getOrCreate()
+```
+
+It contains the following configuation parameters:
 
 1. `.master('k8s://https://kubernetes.default.svc:443')` - this tells Spark that we work in k8s mode, and what is the address of the `k8s` API service. Note that both the `k8s://` and `https://` clauses are needed - if only the `k8s` part is kept, Spark will attempt `http` and fail in our case
 2. `'fs.v3io.impl'`, `'fs.AbstractFileSystem.v3io.impl'` - v3io is actually overriding HDFS configurations to enable accessing files through the `v3io://` prefix. When using HDFS, some stepping-on-toes happens and Spark doesn't have these configurations available through config files. Therefore, they need to be provided through configurations
