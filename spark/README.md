@@ -44,3 +44,34 @@ Once you have configured everything, you can go ahead and run the notebook from 
 > ## BUG: Having to place `krb5.conf` in `/etc`
 >
 > One huge caveat we have so far is that on the Jupyter pod, the driver for some reason requires that the `krb5.conf` file be present in the default location on `/etc`. I found no way to work around that for now. This is still WIP.
+
+## Actual Spark configurations
+
+The [notebook](./spark-k8s.ipynb) contains several sections with critical configurations, without which Spark will not be able to work properly. This section explains the specific parts of it and their role in the overall execution.
+
+### Local environment variables
+
+The Spark driver is running on the Jupyter pod in our case, since this is client mode, which is the only mode supported for Python in Spark. The driver has responsiblity for communicating with the HDFS cluster and obtaining delegation tokens to be passed to the executors. This means that the driver needs to be able to authenticate to HDFS using Kerberos. To do that, it needs the "usual suspects" of environment variables:
+
+1. KRB5CCNAME - the location of the Kerberos ticket cache file
+2. HADOOP_CONF_DIR - HDFS configuration. Without this it won't understand it needs to work securely, and who to talk to
+3. KRB5_CONFIG - location of the Kerberos configuration. Note that per the BUG mentioned above, this has no effect for some reason
+
+The notebook also contains code to run `kinit` to make sure it's authenticated with Kerberos. In the final product the plan is for this to be replaced with a sidecar implementation or something else.
+
+### Spark session configurations
+
+There is a long list of configurations, this section will cover them and what their purpose is.
+
+1. `.master('k8s://https://kubernetes.default.svc:443')` - this tells Spark that we work in k8s mode, and what is the address of the `k8s` API service. Note that both the `k8s://` and `https://` clauses are needed - if only the `k8s` part is kept, Spark will attempt `http` and fail in our case
+2. `'fs.v3io.impl'`, `'fs.AbstractFileSystem.v3io.impl'` - v3io is actually overriding HDFS configurations to enable accessing files through the `v3io://` prefix. When using HDFS, some stepping-on-toes happens and Spark doesn't have these configurations available through config files. Therefore, they need to be provided through configurations
+3. `'spark.kubernetes.container.image'`, `'spark.kubernetes.namespace'` - configurations that tell Spark what Docker image to use, and what namespace to use. The default namespace is `default`, so that won't work in our case. Of course, one can automatically take the value from `/var/run/secrets/kubernetes.io/serviceaccount/namespace` or some env. variable. Currently I've used a manually-provided value
+4. `'spark.pyspark.python'` - the Python image has both Python 2 and Python 3 implementations on it (possibly this can be overriden in the image creation script). By default it tries to run the code using Python 2, so this parameter is needed to make it use the right one.
+5. `'spark.kubernetes.executor.podTemplateFile'` - this is the Pod template file, described above
+6. `'spark.kubernetes.driver.pod.name'` - this parameter is not mandatory, but it makes our pod the owner of the executor pods, so that if the Jupyter pod is deleted all executor pods will also get deleted by k8s
+7. `'spark.executor.extraJavaOptions'` - I use this to pass the `java.security.krb5.conf` parameter to the executor JVM. This is also passed through the `'spark.kubernetes.kerberos.krb5.path'` parameter, so one of them seems to be redundant. Will need to check which one...
+8. `'spark.executorEnv.HADOOP_CONF_DIR'` - tells the executor where to find the Hadoop configuration. Critical parameter
+9. `'spark.kerberos.keytab'` and `'spark.kerberos.principal'` - these of course are critical so that Spark knows how to authenticate to Kerberos, and enable renewing of the Kerberos tickets once they expire (for long running tasks)
+10. `'spark.kerberos.access.hadoopFileSystems'` - still need to verify whether this is really critical
+
+The notebook also has a small section on some other confgurations which exist and may or not bring any benefit at all.
