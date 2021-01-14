@@ -37,12 +37,6 @@ User/conf/spark:
 
 It's ok to not have those files available at first delpoyment, as we need the customer to provide them (they are his Kerberos and Hadoop configurations), but the directory structure should be there, and the customer should be instructed to place the files in the correct locations, and use the exact names.
 
-> **Note:** I modified the `krb5.conf` file so that the ticket cache location is changed to the right location (`/User/conf/kerberos/krb5_ccache`). I did this with the command:
->
-> ```sed -i 's/\/tmp\/ccache\/krb5kdc_ccache/\/User\/conf\/kerberos\/krb5kdc_ccache/g' ./conf/kerberos/krb5.conf```
->
-> A similar thing will need to be done for the customer's config file as well. Alternatively, if we're setting the `KRB5CCNAME` env variable, then this can be avoided as it overrides the configuration.
-
 ## Place `krb5.conf` in `/etc`
 
 >**Note:** The `krb5.conf` file is a configuration file that should be <
