@@ -58,7 +58,8 @@ The steps are as follows (assuming you are starting from the root directory, rig
     ```
 
     What these commands do is create 3 principals - 2 users (`iguazio` and `krbtest`), and a single host which corresponds to the server pod (assuming you didn't change the pod's name by messing around with the Helm parameters). Then it uses `ktadd` to save passwords for the `iguazio` user and the server host to the `/etc/krb5.keytab` file - this file will be used to authenticate without password later
-5. Save the `krb5.keytab` file to a k8s secret (will be consumed by the client pod):
+5. Create another keytab called `/etc/hdfs.keytab` - for now you can just copy the `krb5.keytab` file - it's needed because the `generate_keytab_secret` expects this to also exist (it is used later for HDFS configuration)
+6. Save the `krb5.keytab` file to a k8s secret (will be consumed by the client pod):
 
     ```bash
     source generate_keytab_secret
