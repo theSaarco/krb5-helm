@@ -95,74 +95,179 @@ It contains the following configuation parameters:
 
 The notebook also has a small section on some other confgurations which exist and may or not bring any benefit at all.
 
-## Steps for productization
+## Deployment steps for customer environment
 
-This section describes the steps needed to enable the Spark k8s mode to be working within the platform in a reasonable manner. This doesn't mean full support by the platform, but rather a manually-configured but easily activated mode that can be enabled if requested.
+**Pre-requisite:** Spark service is deployed, running Spark >=3.0.0.
 
-### Creating a container for executor pods
+### Deploy Jupyter
 
-An image needs to exist that supports running Spark with the correct version, and supports executing Python code on top. This image needs to be pointed to by the `spark.kubernetes.container.image` parameter of Spark configuration.
+when deploying Jupyter service, make sure to:
 
-> **TBD**: Can we use the Spark server image for this purpose? Re-using the Spark server image has benefits in that it does not require creating a new image, and it is guaranteed to be fully compatible with the client version of Spark running on Jupyter (for example).
+1. Add Spark support as part of the deployment, pick the Spark service. We are not going to use this spark service, but this option adds configurations to Jupyter that we'll need for k8s mode as well. Besides, if the user wants to work with the stand-alone Spark service, he can do it.
+2. Add environment variables. The following environment vars should be added:
 
-### Generating a pod template file
+    ```bash
+    KRB5CCNAME = FILE:/User/conf/kerberos/krb5_ccache
+    HADOOP_CONF_DIR = /User/conf/hadoop
+    KRB5_CONFIG = /User/conf/kerberos/krb5.conf
+    ```
 
-As described above, we need to generate a pod tamplate that will serve as basis for the executor pods. This template needs to have the `/User` fuse mount, and the facilities needed for the `v3iod` deamon to operate on top of it - these require some shared-memory mappings, for example.
+    Make sure to write them exactly as they're shown here. No need for any modifications in them.
 
-If we're using the Spark server image as basis for our pods, this step may be less required, since the image already contains within it most of the configurations needed - this may be another benefit for using the Spark server image.
+### Create /User file heirarchy
 
-Should we choose to create a pod template file, it will need to be placed in the pods that execute the Spark client code, so that the Spark submit operation can reach it.
-
-### Configurations not done by the user
-
-#### Spark default configurations
-
-As described in the previous sections, there are various configurations that are needed in order for Spark k8s mode to work properly with HDFS and Kerberos. We'd like to make the customer customize as few of these as possible, and for that we can providede a `spark.defaults` file that will already contain most of the configurations needed. Since there's only one defaults file for Spark, if the uses wishes to work both with stand-alone mode and with k8s mode, then we'll need to provide a capability to switch between configuration files - we can generate a script that will do that.
-
-The following parameters should be in the default configuration file (and not need configuring by the user):
-
-1. `.master('k8s://https://kubernetes.default.svc:443')`
-2. `fs.v3io.impl`, `fs.AbstractFileSystem.v3io.impl`
-3. `spark.kubernetes.container.image`, `spark.kubernetes.namespace`
-4. `spark.pyspark.python`
-5. `spark.kubernetes.executor.podTemplateFile` - if we need a pod template
-6. `spark.kubernetes.driver.pod.name` - can be set to the pod's name (or `hostname` in most cases)
-7. `spark.executor.extraJavaOptions`
-
-Except for the 1st parameter (which implies k8s mode), the rest of the parameters can be set also for stand-alone mode, as they either have no meaning in stand-alone mode or do not interfere with the regular operation of it (of course, this needs to be verified).
-
-What this means is that the only configuration that is reqlly unique is setting the `master` property for Spark - this can actually be done as part of the Python code if we want to allow the user to choose between stand-alone and k8s. In this case we use the exact same defaults file, and the user just modifies the master per the mode she wishes to work with.
-
-#### Environment variables
-
-1. `KRB5CCNAME` - the location of the Kerberos ticket cache file
-2. `HADOOP_CONF_DIR` - HDFS configuration. Without this it won't understand it needs to work securely, and who to talk to
-3. `KRB5_CONFIG` - location of the Kerberos configuration. Note that per the BUG mentioned above, this has no effect for some reason
-
-We can decide that we pre-set those parameters, and require that the user conform to the values we specify. For example, decide that the Hadoop configuration will be always placed in `/User/conf/hadoop` and the relevant Kerberos files will be always placed in `/User/conf/kerberos`. We can then point these env variables to the relevant locations. For example:
+Created filesystem heirarchy with the configuration files:
 
 ```bash
-export HADOOP_CONF_DIR=/User/conf/hadoop
-export KRB5_CONFIG=/User/conf/kerberos/krb5.conf
-export KRB5CCNAME=/User/conf/kerberos/krb5_ccache
+User/conf/hadoop:
+    core-site.xml
+    hdfs-site.xml
+
+User/conf/kerberos:
+    krb5.conf
+    krb5.keytab
+    krb5_ccache
+
+User/conf/spark:
+    worker_pod.yaml
 ```
 
-The only thing here that may be delicate is that the ticket cache file is not always with the same default name, and the user may wish to modify it (though it is determined in the `krb5.conf` file). We can still enforce this and work with the user to make sure the configuration matches.
+It's ok to not have those files available at first delpoyment, as we need the customer to provide them (they are his Kerberos and Hadoop configurations), but the directory structure should be there, and the customer should be instructed to place the files in the correct locations, and use the exact names.
 
-### User configurations
+> **Note:** I modified the `krb5.conf` file so that the ticket cache location is changed to the right location (`/User/conf/kerberos/krb5_ccache`). I did this with the command:
+>
+> ```sed -i 's/\/tmp\/ccache\/krb5kdc_ccache/\/User\/conf\/kerberos\/krb5kdc_ccache/g' ./conf/kerberos/krb5.conf```
+>
+> A similar thing will need to be done for the customer's config file as well. Alternatively, if we're setting the `KRB5CCNAME` env variable, then this can be avoided as it overrides the configuration.
 
-With all the pre-configuration mentioned above, we are actually left with a very limited set of configurations that the user needs to configure.
-There are 3 configurations that are passed to Spark and point at HDFS/Kerberos configurations:
+### Place `krb5.conf` in `/etc`
 
-1. `spark.executorEnv.HADOOP_CONF_DIR`
-2. `spark.kerberos.keytab` and `spark.kerberos.principal`
+>**Note:** The `krb5.conf` file is a configuration file that should be <
+provided by the customer. If we can have it available at deployment, then this step can be done then. Else, need to escort the customer on first usage.
 
-If we pre-determine the `HADOOP_CONF_DIR` value, then this can also be pre-determined and passed to the default config file. The other two parameters will still need to be specified by the user, as they cannot be pre-determined by us.
+Copy `krb5.conf` also to `/etc/krb5.conf` on Jupyter (currently it's the only location that it will accept). Unfortunately, this needs to be done as root, so from the node ssh do this:
 
-The bottom line is, the user will need to specify 3 parameters:
+```bash
+JUPYTER_CONTAINER_ID=`docker ps|grep jupyter|grep bash|awk '{print $1}'`
+docker exec -it -u root $JUPYTER_CONTAINER_ID cp /User/conf/kerberos/krb5.conf /etc/krb5.conf
+```
 
-1. `.master('k8s://https://kubernetes.default.svc:443')`
-2. `spark.kerberos.keytab`
-3. `spark.kerberos.principal`
+### Create Spark executor image
 
-Which is a very easy to do configuration.
+Need to have the Spark distribution we are using in Jupyter, and from it generate the spark Docker images, using the command:
+
+```bash
+cd <spark root dir>
+./bin/docker-image-tool.sh -r spark-exec -t latest -u 1000 -p kubernetes/dockerfiles/spark/bindings/python/Dockerfile build
+```
+
+Ensure both images (basic and python) were created:
+
+```bash
+$ docker images | grep spark-exec
+spark-exec/spark-py                                                                                                               latest                                  f059bac69989        13 seconds ago       992MB
+spark-exec/spark                                                                                                                  latest                                  22f1da7cc733        About a minute ago   522MB
+```
+
+### Pod template yaml file
+
+Use this [yaml file](./worker_pod.yaml).
+
+v3io_auth is reusing a k8s secret that Jupyter uses, so you need to ensure that the `jupyter-v3io-auth` secret exists (and if your Jupyter service and hence the secret is named differently, then you need to modify the template accordingly):
+
+```yaml
+  volumes:
+  - name: v3io-auth
+    secret:
+      defaultMode: 420
+      secretName: jupyter-v3io-auth
+```
+
+Also, it sets `IGZ_DATA_CONFIG_FILE` to point at `/User/conf/spark/v3io.conf`, so we need to place the file there. On shell service or Jupyter service, perform:
+
+```bash
+cp $IGZ_DATA_CONFIG_FILE /User/conf/spark/
+```
+
+### Modify `spark-defaults.conf` file
+
+Start with the existing file (in `/spark/conf/spark-defaults.conf`) - it should be there if the Jupyter service was created with Spark support.
+
+Add the following lines to the file:
+
+```bash
+# Configurations that are specific to HDFS/Kerberos with Spark k8s mode.
+
+spark.hadoop.fs.v3io.impl=io.iguaz.v3io.hcfs.V3IOFileSystem
+spark.hadoop.fs.AbstractFileSystem.v3io.impl=io.iguaz.v3io.hcfs.V3IOAbstractFileSystem
+spark.kubernetes.container.image=spark-exec/spark-py:latest
+spark.kubernetes.namespace=default-tenant
+spark.pyspark.python=python3.7
+spark.kubernetes.executor.podTemplateFile=/User/conf/spark/worker_pod.yaml
+spark.executorEnv.HADOOP_CONF_DIR=/User/conf/hadoop
+spark.kerberos.keytab=/User/conf/kerberos/krb5.keytab
+```
+
+As there's nothing specific in these lines, you can copy them as-is. No need for any modifications.
+
+### Verify Kerberos init works
+
+From Jupyter shell, execute the following lines:
+
+```bash
+kinit -k -t /User/conf/kerberos/krb5.keytab <user-principal>@<realm>
+klist
+```
+
+If it works, then we can indeed authenticate with Kerberos using the provided keytab and the needed principal.
+The same lines can be executed from a notebook, just prefix them with `!`.
+
+### Spark configuration needed by the user
+
+As most of the parameters are pre-configured at this stage, the user needs to do very little configuration in the actual Python notebook. Specifically the line to create a `SparkSession` should be something like:
+
+```python
+spark = SparkSession.builder.appName('<app name>') \
+    .master('k8s://https://kubernetes.default.svc:443') \
+    .config('spark.kerberos.principal','<principal name>') \
+    .getOrCreate()
+```
+
+See the [notebook](./spark-k8s.ipynb) for a working example.
+
+## Open issues / questions
+
+Question: Jupyter refuses to import `pyspark.sql` - brings out error:
+
+```python
+---------------------------------------------------------------------------
+ModuleNotFoundError                       Traceback (most recent call last)
+<ipython-input-6-384785b29356> in <module>
+----> 1 from pyspark.sql import SparkSession
+      2 import socket
+      3 
+      4 hostname = socket.gethostname()
+      5 
+
+/spark/python/pyspark/__init__.py in <module>
+     49 
+     50 from pyspark.conf import SparkConf
+---> 51 from pyspark.context import SparkContext
+     52 from pyspark.rdd import RDD, RDDBarrier
+     53 from pyspark.files import SparkFiles
+
+/spark/python/pyspark/context.py in <module>
+     25 from tempfile import NamedTemporaryFile
+     26 
+---> 27 from py4j.protocol import Py4JError
+     28 from py4j.java_gateway import is_instance_of
+     29 
+
+ModuleNotFoundError: No module named 'py4j'
+```
+
+This was solved by:
+
+```!pip install py4j==0.10.9```
+
+Maybe we want to pre-install it on Jupyter? 
