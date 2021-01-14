@@ -17,7 +17,7 @@ when deploying Jupyter service, make sure to:
 
     Make sure to write them exactly as they're shown here. No need for any modifications in them.
 
-## Create /User file heirarchy
+## Create `/User` file heirarchy
 
 Created filesystem heirarchy with the configuration files:
 
@@ -39,7 +39,7 @@ It's ok to not have those files available at first delpoyment, as we need the cu
 
 ## Place `krb5.conf` in `/etc`
 
->**Note:** The `krb5.conf` file is a configuration file that should be <
+>**Note:** The `krb5.conf` file is a configuration file that should be
 provided by the customer. If we can have it available at deployment, then this step can be done then. Else, need to escort the customer on first usage.
 
 Copy `krb5.conf` also to `/etc/krb5.conf` on Jupyter (currently it's the only location that it will accept). Unfortunately, this needs to be done as root, so from the node ssh do this:
