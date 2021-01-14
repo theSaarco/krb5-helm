@@ -1,15 +1,23 @@
-kubectl -n default-tenant cp hadoop-worker:/etc/krb5.conf ./krb5.conf
-sed -i 's/\/tmp\/ccache\/krb5kdc_ccache/\/User\/spark\/krb5kdc_ccache/g' ./krb5.conf
-kubectl -n default-tenant cp hadoop-worker:/etc/krb5.keytab ./krb5.keytab
+mkdir -p ./conf/kerberos
+mkdir -p ./conf/hadoop
+mkdir -p ./conf/spark
 
-touch ./krb5kdc_ccache
+kubectl -n default-tenant cp hadoop-worker:/etc/krb5.conf ./conf/kerberos/krb5.conf
+sed -i 's/\/tmp\/ccache\/krb5kdc_ccache/\/User\/conf\/kerberos\/krb5_ccache/g' ./conf/kerberos/krb5.conf
+kubectl -n default-tenant cp hadoop-worker:/etc/krb5.keytab ./conf/kerberos/krb5.keytab
 
-kubectl -n default-tenant cp hadoop-worker:/usr/local/hadoop/etc/hadoop/core-site.xml ./hadoop/core-site.xml
-kubectl -n default-tenant cp hadoop-worker:/usr/local/hadoop/etc/hadoop/hdfs-site.xml ./hadoop/hdfs-site.xml
-# kubectl -n default-tenant cp hadoop-worker:/usr/local/hadoop/etc/hadoop/mapred-site.xml ./hadoop/mapred-site.xml
+touch ./conf/kerberos/krb5_ccache
 
-tar cvfz jupyter_files.tgz hadoop spark-k8s.ipynb worker_pod.yaml hdfs-io.ipynb krb5.keytab set_spark_env spark-defaults.conf krb5kdc_ccache krb5.conf 
+kubectl -n default-tenant cp hadoop-worker:/usr/local/hadoop/etc/hadoop/core-site.xml ./conf/hadoop/core-site.xml
+kubectl -n default-tenant cp hadoop-worker:/usr/local/hadoop/etc/hadoop/hdfs-site.xml ./conf/hadoop/hdfs-site.xml
+
+cp worker_pod.yaml ./conf/spark
+cp log4j.properties ./conf/hadoop
+
+tar cvfz jupyter_files.tgz conf spark-k8s.ipynb
+
 JUPY=`kubectl -n default-tenant get pods | grep jupyter | awk '{print $1}'`
 kubectl -n default-tenant cp jupyter_files.tgz $JUPY:/User -c jupyter
-kubectl -n default-tenant exec $JUPY -c jupyter -- /bin/bash -c "mkdir /User/spark && cd /User/spark && tar xvfz ../jupyter_files.tgz"
-rm -f jupyter_files.tgz krb5.conf krb5.keytab krb5kdc_ccache ./hadoop/*.xml
+kubectl -n default-tenant exec $JUPY -c jupyter -- /bin/bash -c "cd /User && tar xvfz ./jupyter_files.tgz"
+
+rm -rf jupyter_files.tgz conf
