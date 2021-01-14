@@ -8,21 +8,17 @@ spec:
     - mountPath: /User
       name: v3io-fuse
       subPath: users//admin
-    - mountPath: /etc/config/v3io
-      name: v3io-config
     - mountPath: /igz/java/crash
       name: igz-java
+    - mountPath: /igz/java/auth
+      name: v3io-auth
     - mountPath: /dev/shm
       name: shm
     - mountPath: /var/run/iguazio/dayman
       name: v3iod-comm
     env:
-    - name: V3IO_API
-      value: v3io-webapi.default-tenant.svc:8081
-    - name: V3IO_FRAMESD
-      value: framesd:8081
     - name: IGZ_DATA_CONFIG_FILE
-      value: /etc/config/v3io/v3io.conf
+      value: /User/conf/spark/v3io.conf
     - name: CURRENT_NODE_IP
       valueFrom:
         fieldRef:
@@ -36,12 +32,12 @@ spec:
       secretRef:
         name: jupyter-v3io-fuse
     name: v3io-fuse
-  - configMap:
-      defaultMode: 420
-      name: spark-worker-v3io-config
-    name: v3io-config    
   - emptyDir: {}
     name: igz-java
+  - name: v3io-auth
+    secret:
+      defaultMode: 420
+      secretName: jupyter-v3io-auth
   - hostPath:
       path: /dev/shm/default-tenant
       type: ""
