@@ -54,10 +54,24 @@ docker exec -it -u root $JUPYTER_CONTAINER_ID ln -s /User/conf/kerberos/krb5.con
 
 ## Create Spark executor image
 
-Need to have the Spark distribution we are using in Jupyter, and from it generate the spark Docker images, using the command:
+Need to have the Spark distribution we are using in Jupyter, and from it generate the spark Docker images.
+
+To achieve this, the easiest (though pretty ugly) way is to copy the Spark distribution from Jupyter and copy it to the app node. Follow these steps:
 
 ```bash
-cd <spark root dir>
+# On Jupyter
+tar cvfz /User/spark.tgz /spark
+
+# On the app-node
+kubectl -n default-tenant cp <jupyter container>:/User/spark.tgz /tmp/spark.tgz
+cd /tmp
+tar xvfz spark.tgz
+```
+
+This will generate a `/tmp/spark` directory with all the Spark distribution. Of course, you can extract the tar file under any directory. Then:
+
+```bash
+cd <Spark root dir>
 ./bin/docker-image-tool.sh -r spark-exec -t latest -u 1000 -p kubernetes/dockerfiles/spark/bindings/python/Dockerfile build
 ```
 
