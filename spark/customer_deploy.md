@@ -6,7 +6,7 @@
 
 when deploying Jupyter service, make sure to:
 
-1. Add Spark support as part of the deployment, pick the Spark service. We are not going to use this spark service, but this option adds configurations to Jupyter that we'll need for k8s mode as well. Besides, if the user wants to work with the stand-alone Spark service, he can do it.
+1. Add Spark support as part of the deployment of Jupyter - pick the Spark service that exists (or create a new one). We are not going to use this spark service, but this option adds configurations to Jupyter that we'll need for k8s mode as well. Besides, if the user wants to work with the stand-alone Spark service, he can do it.
 2. Add environment variables. The following environment vars should be added:
 
     ```bash
@@ -22,31 +22,34 @@ when deploying Jupyter service, make sure to:
 Created filesystem heirarchy with the configuration files:
 
 ```bash
-User/conf/hadoop:
+/User/conf/hadoop:
     core-site.xml
     hdfs-site.xml
 
-User/conf/kerberos:
+/User/conf/kerberos:
     krb5.conf
     krb5.keytab
     krb5_ccache
 
-User/conf/spark:
+/User/conf/spark:
     worker_pod.yaml
+    v3io.conf
 ```
 
-It's ok to not have those files available at first delpoyment, as we need the customer to provide them (they are his Kerberos and Hadoop configurations), but the directory structure should be there, and the customer should be instructed to place the files in the correct locations, and use the exact names.
+For files in `/User/conf/hadoop` and `/User/conf/kerberos` - it's ok to not have those files available at first delpoyment, as we need the customer to provide them (they are his Kerberos and Hadoop configurations), but the directory structure should be there, and the customer should be instructed to place the files in the correct locations, and use the exact names.
+
+The files located under `/User/conf/spark` are not customer-specific, and will be handled later in this page.
 
 ## Place `krb5.conf` in `/etc`
 
 >**Note:** The `krb5.conf` file is a configuration file that should be
 provided by the customer. If we can have it available at deployment, then this step can be done then. Else, need to escort the customer on first usage.
 
-Copy `krb5.conf` also to `/etc/krb5.conf` on Jupyter (currently it's the only location that it will accept). Unfortunately, this needs to be done as root, so from the node ssh do this:
+Create a soft link to `krb5.conf` from `/etc/krb5.conf` on Jupyter (currently it's the only location that it will accept). Unfortunately, this needs to be done as root, so from the node ssh do this:
 
 ```bash
 JUPYTER_CONTAINER_ID=`docker ps|grep jupyter|grep bash|awk '{print $1}'`
-docker exec -it -u root $JUPYTER_CONTAINER_ID cp /User/conf/kerberos/krb5.conf /etc/krb5.conf
+docker exec -it -u root $JUPYTER_CONTAINER_ID ln -s /User/conf/kerberos/krb5.conf /etc/krb5.conf
 ```
 
 ## Create Spark executor image
@@ -68,23 +71,25 @@ spark-exec/spark                                                                
 
 ## Pod template yaml file
 
-Use this [yaml file](./worker_pod.yaml).
+Use this [yaml file](./worker_pod.yaml). Place it in `/User/conf/spark/worker_pod.yaml`
 
-v3io_auth is reusing a k8s secret that Jupyter uses, so you need to ensure that the `jupyter-v3io-auth` secret exists (and if your Jupyter service and hence the secret is named differently, then you need to modify the template accordingly):
+There are 2 things to pay attention to:
 
-```yaml
-  volumes:
-  - name: v3io-auth
-    secret:
-      defaultMode: 420
-      secretName: jupyter-v3io-auth
-```
+1. Within this template, `v3io_auth` is reusing a k8s secret that Jupyter uses, so you need to ensure that the `jupyter-v3io-auth` secret exists (and if your Jupyter service and hence the secret is named differently, then you need to modify the template accordingly):
 
-Also, it sets `IGZ_DATA_CONFIG_FILE` to point at `/User/conf/spark/v3io.conf`, so we need to place the file there. On shell service or Jupyter service, perform:
+    ```yaml
+      volumes:
+     - name: v3io-auth
+        secret:
+         defaultMode: 420
+         secretName: jupyter-v3io-auth
+    ```
 
-```bash
-cp $IGZ_DATA_CONFIG_FILE /User/conf/spark/
-```
+2. It sets the environment variable `IGZ_DATA_CONFIG_FILE` to point at `/User/conf/spark/v3io.conf`, so we need to place the correct file there. On shell service or Jupyter service, perform:
+
+    ```bash
+    cp $IGZ_DATA_CONFIG_FILE /User/conf/spark/
+    ```
 
 ## Modify `spark-defaults.conf` file
 
