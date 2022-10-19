@@ -3,12 +3,12 @@ serviceAccount:
 
 containers:
   image: hachikoapp/kuberos
-  tag: latest
+  tag: 0.0.1
   pullPolicy: IfNotPresent
 
 sidecar:
   image: hachikoapp/krb_sidecar
-  tag: latest
+  tag: 0.0.1
   pullPolicy: IfNotPresent
 
 client:
@@ -63,9 +63,9 @@ kdc:
   restrict_anonymous: true
   preauth_challenge: edwards25519
   persistence:
-    enabled: false
+    enabled: true
     name: kerberos-db
-    storageClass: standard
+    storageClass: do-block-storage
     size: 1Gi
   # Explicitly define kdc db master password, else 40 char random string generated
     password: password123
