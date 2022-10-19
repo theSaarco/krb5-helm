@@ -107,6 +107,40 @@ The steps are as follows (assuming you are starting from the root directory, rig
     kuberos-kuberos-kdc   1/1     22m
     ```
 
+    ```bash
+    kubectl get pods -n kerberos
+    NAME                    READY   STATUS    RESTARTS   AGE
+    kuberos-kuberos-kdc-0   2/2     Running   0          2m5s
+
+    kubectl delete pod kuberos-kuberos-kdc-0 -n kerberos
+    pod "kuberos-kuberos-kdc-0" deleted
+
+    kubectl get pods -n kerberos
+    NAME                    READY   STATUS            RESTARTS   AGE
+    kuberos-kuberos-kdc-0   0/2     PodInitializing   0          12s
+
+    kubectl get pods -n kerberos
+    NAME                    READY   STATUS    RESTARTS   AGE
+    kuberos-kuberos-kdc-0   2/2     Running   0          24s
+    ```
+
+    ```bash
+    kubectl -n kerberos exec -ti kuberos-kuberos-kdc-0 --container kadmin -- /bin/bash
+    [root@kuberos-kuberos-kdc-0 /]# kadmin.local
+    Authenticating as principal root/admin@GODEVELOPER.NET with password.
+    kadmin.local:  list_principals
+    K/M@GODEVELOPER.NET
+    host/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local@GODEVELOPER.NET
+    iguazio@GODEVELOPER.NET
+    kadmin/admin@GODEVELOPER.NET
+    kadmin/changepw@GODEVELOPER.NET
+    kadmin/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local@GODEVELOPER.NET
+    kiprop/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local@GODEVELOPER.NET
+    krbtest@GODEVELOPER.NET
+    krbtgt/GODEVELOPER.NET@GODEVELOPER.NET
+    kadmin.local:
+    ```
+
 ## Deploying a client
 
 Now that you have a server running, you need to deploy a client pod that will make proper use of it. The steps to do that are as follows:
