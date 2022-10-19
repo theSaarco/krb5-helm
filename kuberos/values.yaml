@@ -2,12 +2,12 @@ serviceAccount:
   create: true
 
 containers:
-  image: kuberos
+  image: hachikoapp/kuberos
   tag: latest
   pullPolicy: IfNotPresent
 
 sidecar:
-  image: krb_sidecar
+  image: hachikoapp/krb_sidecar
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -15,7 +15,7 @@ client:
   secret_name: "krb5-keytab"
 
 krb5:
-  default_realm: example.com
+  default_realm: godeveloper.net
   lookup_realm: false
   lookup_kdc: true
   rdns: false
@@ -32,7 +32,7 @@ krb5:
     camellia128-cts-cmac
 
 realms:
-  example.com:
+  godeveloper.net:
     master_key_type: aes256-cts
     max_life: 7d
     max_renew_life: 14d
