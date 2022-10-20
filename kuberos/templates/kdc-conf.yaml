@@ -11,6 +11,7 @@ metadata:
 data:
   kdc.conf: |-
     [kdcdefaults]
+     forwardable = {{ .Values.kdc.forwardable }}
      kdc_ports = {{ .Values.kdc.udp.port }}
      kdc_tcp_ports = {{ .Values.kdc.tcp.port }}
      restrict_anonymous_to_tgt = {{ .Values.kdc.restrict_anonymous }}
