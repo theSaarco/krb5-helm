@@ -53,7 +53,6 @@ realms:
     extra_domains: []
 
 kdc:
-  forwardable: true
   service: NodePort
   udp:
     port: 88
