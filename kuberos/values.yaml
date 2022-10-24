@@ -53,7 +53,7 @@ realms:
     extra_domains: []
 
 kdc:
-  service: NodePort
+  service: ClusterIP #NodePort
   udp:
     port: 88
     name: kdc-udp
@@ -71,7 +71,7 @@ kdc:
     password: password123
 
 kadmin:
-  service: NodePort
+  service: ClusterIP #NodePort
   udp:
     port: 749
     name: kadmin-udp
