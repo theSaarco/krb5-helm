@@ -1,0 +1,85 @@
+serviceAccount:
+  create: true
+
+containers:
+  image: hachikoapp/kuberos
+  tag: 0.0.1
+  pullPolicy: IfNotPresent
+
+sidecar:
+  image: hachikoapp/krb_sidecar
+  tag: 0.0.1
+  pullPolicy: IfNotPresent
+
+client:
+  secret_name: "krb5-keytab"
+
+krb5:
+  default_realm: godeveloper.net
+  lookup_realm: false
+  lookup_kdc: true
+  rdns: false
+  ticket_lifetime: 24h
+  forwardable: true
+  default_ccache_path: /tmp/ccache
+  default_ccache_file: krb5kdc_ccache
+  enc_types: >-
+    aes256-cts-hmac-sha1-96
+    aes256-cts-hmac-sha384-192
+    camellia256-cts-cmac
+    aes128-cts-hmac-sha1-96
+    aes128-cts-hmac-sha256-128
+    camellia128-cts-cmac
+
+realms:
+  godeveloper.net:
+    master_key_type: aes256-cts
+    max_life: 7d
+    max_renew_life: 14d
+    acl_file: /var/kerberos/krb5kdc/kadm5.acl
+    acls:
+    - princ: "*/admin"
+      perms: "*"
+    kdc_extra_configs: |-
+      ; default_principal_flags = +preauth
+      ; admin_keytab = /var/kerberos/krb5kdc/kadm5.keytab
+      ; pkinit_identity = FILE:/var/kerberos/krb5kdc/kdc.crt,/var/kerberos/krb5kdc/kdc.key
+      ; pkinit_anchors = FILE:/var/kerberos/krb5kdc/kdc.crt
+      ; pkinit_anchors = FILE:/var/kerberos/krb5kdc/cacert.pem
+      ; pkinit_pool = FILE:/var/lib/ipa-client/pki/ca-bundle.pem
+    krb5_extra_configs: |-
+      ; pkinit_anchors = FILE:/path/to/kdc-ca-bundle.pem
+      ; pkinit_pool = FILE:/path/to/ca-bundle.pem
+    extra_domains: []
+
+kdc:
+  service: ClusterIP #NodePort
+  udp:
+    port: 88
+    name: kdc-udp
+  tcp:
+    port: 88
+    name: kdc-tcp
+  restrict_anonymous: true
+  preauth_challenge: edwards25519
+  persistence:
+    enabled: true
+    name: kerberos-db
+    storageClass: do-block-storage
+    size: 1Gi
+  # Explicitly define kdc db master password, else 40 char random string generated
+    password: password123
+
+kadmin:
+  service: ClusterIP #NodePort
+  udp:
+    port: 749
+    name: kadmin-udp
+  tcp:
+    port: 749
+    name: kadmin-tcp
+
+admin_princ:
+  name: ""
+  password: ""
+

@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "kerberos.fullname" . }}-kdc
+  labels:
+    app: {{ template "kerberos.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  type: {{ .Values.kdc.service }}
+  ports:
+    - port: {{ .Values.kdc.udp.port }}
+      targetPort: {{ .Values.kdc.udp.name }}
+      protocol: UDP
+      name: {{ .Values.kdc.udp.name }}
+{{- if .Values.kadmin.tcp }}
+    - port: {{ .Values.kdc.tcp.port }}
+      targetPort: {{ .Values.kdc.tcp.name }}
+      protocol: TCP
+      name: {{ .Values.kdc.tcp.name }}
+{{- end }}
+  selector:
+    app: {{ template "kerberos.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}

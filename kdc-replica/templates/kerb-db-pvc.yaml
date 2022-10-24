@@ -1,0 +1,18 @@
+{{- if .Values.kdc.persistence.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.kdc.persistence.name }}
+  labels:
+    app: {{ template "kerberos.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: {{ .Values.kdc.persistence.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.kdc.persistence.size }}
+{{- end -}}

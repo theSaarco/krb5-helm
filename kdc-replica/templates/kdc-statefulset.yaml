@@ -1,0 +1,138 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: {{ template "kerberos.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    component: kdc
+  name: {{ template "kerberos.fullname" . }}-kdc
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "kerberos.name" . }}
+      chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+      heritage: {{ .Release.Service }}
+      release: {{ .Release.Name }}
+      component: kdc
+  serviceName: {{ template "kerberos.fullname" . }}-kdc
+  replicas: 1
+  # strategy:
+    # rollingUpdate:
+      # maxSurge: 1
+      # maxUnavailable: 1
+    # type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ template "kerberos.name" . }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        heritage: {{ .Release.Service }}
+        release: {{ .Release.Name }}
+        component: kdc
+    spec:
+{{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ template "kerberos.serviceAccountName" . }}
+{{- end }}
+      initContainers:
+      - name: kdb5-util
+        image: {{ .Values.containers.image }}:{{ .Values.containers.tag }}
+        imagePullPolicy: {{ .Values.containers.pullPolicy }}
+        command:
+        - /init_db
+        args:
+        - "$(REALM)"
+        - "$(MASTER_PASSWORD)"
+        env:
+        - name: REALM
+          value: {{ .Values.krb5.default_realm | upper }}
+        - name: MASTER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "kerberos.fullname" . }}
+              key: master-password
+        volumeMounts:
+        - mountPath: /var/kerberos/krb5kdc
+          name: {{ .Values.kdc.persistence.name }}
+      containers:
+      - name: kdc
+        resources: {}
+        image: {{ .Values.containers.image }}:{{ .Values.containers.tag }}
+        imagePullPolicy: {{ .Values.containers.pullPolicy }}
+        command:
+        - /usr/sbin/krb5kdc
+        args:
+        - -n
+        - "$(KRB5KDC_ARGS)"
+        env:
+        - name: KRB5REALM
+          value: {{ .Values.krb5.default_realm | upper }}
+        - name: KRB5KDC_ARGS
+          value: "-w 2"
+        ports:
+        - containerPort: {{ .Values.kdc.udp.port }}
+          name: {{ .Values.kdc.udp.name }}
+          protocol: UDP
+        - containerPort: {{ .Values.kdc.tcp.port }}
+          name: {{ .Values.kdc.tcp.name }}
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/kerberos/krb5kdc/kadm5.acl
+          name: kdc-conf
+          subPath: kadm5.acl
+        - mountPath: /var/kerberos/krb5kdc/kdc.conf
+          name: kdc-conf
+          subPath: kdc.conf
+        - mountPath: /etc/krb5.conf
+          name: krb5-conf
+          subPath: krb5.conf
+        - mountPath: /var/kerberos/krb5kdc
+          name: {{ .Values.kdc.persistence.name }}
+      - name: kadmin
+        resources: {}
+        image: {{ .Values.containers.image }}:{{ .Values.containers.tag }}
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-c"]
+        args:
+        - /usr/sbin/sshd &&
+          /usr/sbin/kadmind -nofork
+        ports:
+        - containerPort: 749
+          name: kadmin-tcp
+          protocol: TCP
+        - containerPort: 749
+          name: kadmin-udp
+          protocol: UDP
+        volumeMounts:
+        # Kerberos typically expects the database to be stored in the same
+        # directory as the kdc config files; the db volume is mounted first
+        - name: {{ .Values.kdc.persistence.name }}
+          mountPath: /var/kerberos/krb5kdc
+        - name: kdc-conf # Volume comes from the shared configmap; subpath splits off the individual file
+          mountPath: /var/kerberos/krb5kdc/kadm5.acl
+          subPath: kadm5.acl
+        - name: kdc-conf # Volume comes from the shared configmap; subpath splits off the individual file
+          mountPath: /var/kerberos/krb5kdc/kdc.conf
+          subPath: kdc.conf
+        - name: krb5-conf
+          mountPath: /etc/krb5.conf
+          subPath: krb5.conf
+      volumes:
+      - name: kdc-conf
+        configMap:
+          name: {{ template "kerberos.fullname" . }}-kdc-config
+      - name: krb5-conf
+        configMap:
+          name: {{ template "kerberos.fullname" . }}-krb5-config
+      - name: {{ .Values.kdc.persistence.name }}
+{{- if .Values.kdc.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.kdc.persistence.name }}
+{{- else if not .Values.kdc.persistence.enabled }}
+        emptyDir: {}
+{{- end }}
+      nodeSelector: {}
+      securityContext: {}
+      tolerations: []
+      affinity: {}
