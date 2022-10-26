@@ -24,7 +24,7 @@ Create the name of the kerberos service account.
 */}}
 {{- define "kerberos.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create -}}
-    {{ default (include "kerberos.fullname" .) .Values.serviceAccount.name }}
+    {{ default (include "kerberos.name" .) .Values.serviceAccount.name }}
 {{- else -}}
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
