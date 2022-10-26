@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "kerberos.fullname" . }}-kdc-config
+  name: {{ template "kerberos.name" . }}-kdc-config
   labels:
     app: {{ template "kerberos.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
