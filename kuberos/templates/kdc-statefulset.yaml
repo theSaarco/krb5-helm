@@ -7,7 +7,7 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
     component: kdc
-  name: {{ template "kerberos.fullname" . }}-kdc
+  name: {{ template "kerberos.name" . }}-kdc
 spec:
   selector:
     matchLabels:
@@ -16,7 +16,7 @@ spec:
       heritage: {{ .Release.Service }}
       release: {{ .Release.Name }}
       component: kdc
-  serviceName: {{ template "kerberos.fullname" . }}-kdc
+  serviceName: {{ template "kerberos.name" . }}-kdc
   replicas: 1
   # strategy:
     # rollingUpdate:
@@ -50,7 +50,7 @@ spec:
         - name: MASTER_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ template "kerberos.fullname" . }}
+              name: {{ template "kerberos.name" . }}
               key: master-password
         volumeMounts:
         - mountPath: /var/kerberos/krb5kdc
@@ -121,10 +121,10 @@ spec:
       volumes:
       - name: kdc-conf
         configMap:
-          name: {{ template "kerberos.fullname" . }}-kdc-config
+          name: {{ template "kerberos.name" . }}-kdc-config
       - name: krb5-conf
         configMap:
-          name: {{ template "kerberos.fullname" . }}-krb5-config
+          name: {{ template "kerberos.name" . }}-krb5-config
       - name: {{ .Values.kdc.persistence.name }}
 {{- if .Values.kdc.persistence.enabled }}
         persistentVolumeClaim:

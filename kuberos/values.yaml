@@ -2,20 +2,20 @@ serviceAccount:
   create: true
 
 containers:
-  image: kuberos
-  tag: latest
+  image: hachikoapp/kuberos
+  tag: 0.0.1
   pullPolicy: IfNotPresent
 
 sidecar:
-  image: krb_sidecar
-  tag: latest
+  image: hachikoapp/krb_sidecar
+  tag: 0.0.1
   pullPolicy: IfNotPresent
 
 client:
   secret_name: "krb5-keytab"
 
 krb5:
-  default_realm: example.com
+  default_realm: godeveloper.net
   lookup_realm: false
   lookup_kdc: true
   rdns: false
@@ -32,7 +32,7 @@ krb5:
     camellia128-cts-cmac
 
 realms:
-  example.com:
+  godeveloper.net:
     master_key_type: aes256-cts
     max_life: 7d
     max_renew_life: 14d
@@ -53,7 +53,7 @@ realms:
     extra_domains: []
 
 kdc:
-  service: NodePort
+  service: ClusterIP #NodePort
   udp:
     port: 88
     name: kdc-udp
@@ -63,15 +63,15 @@ kdc:
   restrict_anonymous: true
   preauth_challenge: edwards25519
   persistence:
-    enabled: false
+    enabled: true
     name: kerberos-db
-    storageClass: standard
+    storageClass: do-block-storage
     size: 1Gi
   # Explicitly define kdc db master password, else 40 char random string generated
     password: password123
 
 kadmin:
-  service: NodePort
+  service: ClusterIP #NodePort
   udp:
     port: 749
     name: kadmin-udp

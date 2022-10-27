@@ -49,5 +49,5 @@ spec:
 {{- end }} 
       - name: krb5-conf
         configMap:
-          name: {{ template "kerberos.fullname" . }}-krb5-config           
+          name: {{ template "kerberos.name" . }}-krb5-config           
       restartPolicy: OnFailure

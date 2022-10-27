@@ -51,10 +51,42 @@ The steps are as follows (assuming you are starting from the root directory, rig
     Now, run `kadmin.local` and perform the following commands (it's an interactive shell):
 
     ```bash
-    addprinc -pw <password> iguazio
-    addprinc -pw <password> krbtest
-    addprinc -randkey host/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.default-tenant.svc.cluster.local
-    ktadd iguazio host/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.default-tenant.svc.cluster.local
+    [root@kuberos-kuberos-kdc-0 bin]# kadmin.local
+    Authenticating as principal root/admin@GODEVELOPER.NET with password.
+    addprinc -pw testpasswd iguazio
+    WARNING: no policy specified for iguazio@GODEVELOPER.NET; defaulting to no policy
+    Principal "iguazio@GODEVELOPER.NET" created.
+    kadmin.local:
+    kadmin.local:  addprinc -pw testpasswd krbtest
+    WARNING: no policy specified for krbtest@GODEVELOPER.NET; defaulting to no policy
+    Principal "krbtest@GODEVELOPER.NET" created.
+    kadmin.local:
+    kadmin.local: addprinc -randkey host/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local
+    WARNING: no policy specified for host/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local@GODEVELOPER.NET; defaulting to no policy
+    Principal "host/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local@GODEVELOPER.NET" created.
+    kadmin.local: ktadd iguazio host/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local
+    Entry for principal iguazio with kvno 2, encryption type aes256-cts-hmac-sha1-96 added to keytab FILE:/etc/krb5.keytab.
+    Entry for principal iguazio with kvno 2, encryption type aes128-cts-hmac-sha1-96 added to keytab FILE:/etc/krb5.keytab.
+    Entry for principal host/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local with kvno 2, encryption type aes256-cts-hmac-sha1-96 added to keytab FILE:/etc/krb5.keytab.
+    Entry for principal host/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local with kvno 2, encryption type aes128-cts-hmac-sha1-96 added to keytab FILE:/etc/krb5.keytab.
+    kadmin.local:
+    kadmin.local:  exit
+    ```
+
+    List Principals
+
+    ```bash
+    kadmin.local:  list_principals
+    K/M@GODEVELOPER.NET
+    host/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local@GODEVELOPER.NET
+    iguazio@GODEVELOPER.NET
+    kadmin/admin@GODEVELOPER.NET
+    kadmin/changepw@GODEVELOPER.NET
+    kadmin/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local@GODEVELOPER.NET
+    kiprop/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local@GODEVELOPER.NET
+    krbtest@GODEVELOPER.NET
+    krbtgt/GODEVELOPER.NET@GODEVELOPER.NET
+    kadmin.local:  exit
     ```
 
     What these commands do is create 3 principals - 2 users (`iguazio` and `krbtest`), and a single host which corresponds to the server pod (assuming you didn't change the pod's name by messing around with the Helm parameters). Then it uses `ktadd` to save passwords for the `iguazio` user and the server host to the `/etc/krb5.keytab` file - this file will be used to authenticate without password later
@@ -66,6 +98,48 @@ The steps are as follows (assuming you are starting from the root directory, rig
     ```
 
     This will save the keytab to a local file and generate a k8s secret from it, called `secret/krb5-keytab`
+
+    Test Persistence
+
+    ```bash
+    kubectl get statefulset -n kerberos
+    NAME                  READY   AGE
+    kuberos-kuberos-kdc   1/1     22m
+    ```
+
+    ```bash
+    kubectl get pods -n kerberos
+    NAME                    READY   STATUS    RESTARTS   AGE
+    kuberos-kuberos-kdc-0   2/2     Running   0          2m5s
+
+    kubectl delete pod kuberos-kuberos-kdc-0 -n kerberos
+    pod "kuberos-kuberos-kdc-0" deleted
+
+    kubectl get pods -n kerberos
+    NAME                    READY   STATUS            RESTARTS   AGE
+    kuberos-kuberos-kdc-0   0/2     PodInitializing   0          12s
+
+    kubectl get pods -n kerberos
+    NAME                    READY   STATUS    RESTARTS   AGE
+    kuberos-kuberos-kdc-0   2/2     Running   0          24s
+    ```
+
+    ```bash
+    kubectl -n kerberos exec -ti kuberos-kuberos-kdc-0 --container kadmin -- /bin/bash
+    [root@kuberos-kuberos-kdc-0 /]# kadmin.local
+    Authenticating as principal root/admin@GODEVELOPER.NET with password.
+    kadmin.local:  list_principals
+    K/M@GODEVELOPER.NET
+    host/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local@GODEVELOPER.NET
+    iguazio@GODEVELOPER.NET
+    kadmin/admin@GODEVELOPER.NET
+    kadmin/changepw@GODEVELOPER.NET
+    kadmin/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local@GODEVELOPER.NET
+    kiprop/kuberos-kuberos-kdc-0.kuberos-kuberos-kdc.kerberos.svc.cluster.local@GODEVELOPER.NET
+    krbtest@GODEVELOPER.NET
+    krbtgt/GODEVELOPER.NET@GODEVELOPER.NET
+    kadmin.local:
+    ```
 
 ## Deploying a client
 
